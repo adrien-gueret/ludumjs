@@ -1,0 +1,17 @@
+{
+  "name": "ludumjs",
+  "version": "1.0.0",
+  "description": "Small framework helping to create board games",
+  "main": "index.js",
+  "author": "Adrien Guéret",
+  "license": "ISC",
+  "scripts": {
+    "test": "jest --coverage",
+    "test:watch": "jest --coverage --watchAll"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "jest": "^22.4.3"
+  }
+}
