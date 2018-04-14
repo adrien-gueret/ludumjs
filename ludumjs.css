@@ -1,0 +1,3 @@
+.ludumjs-game-container * {
+    pointer-events: none;
+}
