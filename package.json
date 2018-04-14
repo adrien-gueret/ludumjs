@@ -1,13 +1,13 @@
 {
   "name": "ludumjs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Small framework helping to create board games",
   "main": "index.js",
   "author": "Adrien Guéret",
   "license": "ISC",
-  "repository" : {
-    "type" : "git",
-    "url" : "https://github.com/adrien-gueret/ludumjs.git"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adrien-gueret/ludumjs.git"
   },
   "scripts": {
     "test": "jest --coverage",
