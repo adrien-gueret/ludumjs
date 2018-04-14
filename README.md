@@ -10,6 +10,44 @@ For example, in a cards game like _Magic: The Gathering_, you draw a card during
 
 **LudumJS** provides a way to easily manage these phases. That's just it!
 
+## How to install?
+
+### With yarn/npm
+
+```
+npm i ludumjs
+OR
+yarn add ludumjs
+```
+
+Then using it in your project:
+
+```js
+import LudumJS from 'ludumjs';
+
+console.log(LudumJS.Game, LudumJS.Phase);
+```
+
+### Directly in the browser
+
+Entry point of your game must be a JS file importing **LudumJS**:
+
+```js
+import LudumJS from 'https://unpkg.com/ludumjs@1.0.0';
+
+const myGame = new LudumJS.Game(document.getElementById('game'));
+```
+
+This entry point must be inserted thanks to module script tag:
+
+```html
+<script type="module" src="./game-entry-point.js"></script>
+```
+
+**LudumJS** is indeed built with ES6 modules. As for today, all modern browsers support them, according to [caniuse](https://caniuse.com/#feat=es6-module).
+
+If you want your game to be playable on older browsers, you will need to pack your code with a tool like [webpack](https://webpack.js.org/) or [Parcel](https://parceljs.org/).
+
 ## How to use it?
 
 When using **LudumJS**, you have to declare all the phases of your game.  
