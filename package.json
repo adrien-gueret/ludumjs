@@ -5,6 +5,10 @@
   "main": "index.js",
   "author": "Adrien Guéret",
   "license": "ISC",
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/adrien-gueret/ludumjs.git"
+  },
   "scripts": {
     "test": "jest --coverage",
     "test:watch": "jest --coverage --watchAll"
