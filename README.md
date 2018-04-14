@@ -10,6 +10,8 @@ For example, in a cards game like _Magic: The Gathering_, you draw a card during
 
 **LudumJS** provides a way to easily manage these phases. That's just it!
 
+Main benefit of using **LudumJS** is to have a well structured code for your board games, thanks to the concept of "one game phase = one JS class".
+
 ## How to install?
 
 ### With yarn/npm
@@ -46,7 +48,8 @@ This entry point must be inserted thanks to module script tag:
 
 **LudumJS** is indeed built with ES6 modules. As for today, all modern browsers support them, according to [caniuse](https://caniuse.com/#feat=es6-module).
 
-If you want your game to be playable on older browsers, you will need to pack your code with a tool like [webpack](https://webpack.js.org/) or [Parcel](https://parceljs.org/).
+If you want your game to be playable on older browsers, you will need to pack your code with a tool like [webpack](https://webpack.js.org/) or [Parcel](https://parceljs.org/)
+(but in this case you should probably install **LudumJS** via npm/yarn, see above).
 
 ## How to use it?
 
