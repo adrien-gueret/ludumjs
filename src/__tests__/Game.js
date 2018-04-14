@@ -4,12 +4,13 @@ import Phase from '../Phase.js';
 describe('Game', () => {
     describe('constructor', () => {
         it('should correctly init instance', () => {
-            const domContainer = {};
+            const domContainer = document.createElement('div');
             const game = new Game(domContainer);
 
             expect(game.domContainer).toBe(domContainer);
             expect(game.phases).toEqual([]);
             expect(game.currentPhase).toBeNull();
+            expect(domContainer.classList.contains('ludumjs-game-container')).toBe(true);
         });
     });
 
@@ -17,7 +18,7 @@ describe('Game', () => {
         let game;
 
         beforeEach(() => {
-            game = new Game({});
+            game = new Game(document.createElement('div'));
         });
 
         describe('start', () => {

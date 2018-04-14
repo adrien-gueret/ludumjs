@@ -6,6 +6,8 @@ export default class Game {
         this.domContainer = domContainer;
         this.phases = [];
         this.currentPhase = null;
+
+        this.domContainer.classList.add('ludumjs-game-container');
     }
 
     start() {
