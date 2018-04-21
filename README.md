@@ -25,9 +25,9 @@ yarn add ludumjs
 Then using it in your project:
 
 ```js
-import LudumJS from 'ludumjs/client';
+import { Game, Phase } from 'ludumjs/client';
 
-console.log(LudumJS.Game, LudumJS.Phase);
+console.log(Game, Phase);
 ```
 
 ### Directly in the browser
@@ -35,9 +35,9 @@ console.log(LudumJS.Game, LudumJS.Phase);
 Entry point of your game must be a JS file importing **LudumJS**:
 
 ```js
-import LudumJS from 'https://unpkg.com/ludumjs@2.0.0/client.js';
+import { Game } from 'https://unpkg.com/ludumjs@2.0.0/client.js';
 
-const myGame = new LudumJS.Game(document.getElementById('game'));
+const myGame = new Game(document.getElementById('game'));
 ```
 
 This entry point must be inserted thanks to module script tag:
@@ -57,7 +57,7 @@ When using **LudumJS**, you have to declare all the phases of your game.
 To do that, create a class for each phase:
 
 ```js
-class DrawPhase extends LudumJS.Phase {
+class DrawPhase extends Phase {
     onStart() {
         console.log('Draw phase starts', this.game);
     }
@@ -78,7 +78,7 @@ Once your phases are defined, you have to register them into your game:
 
 ```js
 const gameContainer = document.getElementById('game');
-const myGame = new LudumJS.Game(gameContainer);
+const myGame = new Game(gameContainer);
 
 myGame.registerPhases([
     InitPhase,
@@ -95,7 +95,7 @@ The Phase classes will contain the most part of your game code, thanks to the ca
 In order to change phase, you have to call the method `goToPhaseByName` from your game isntance:
 
 ```js
-class InitPhase extends LudumJS.Phase {
+class InitPhase extends Phase {
     onClick() {
         // When clicking during InitPhase, go to DrawPhase
         this.game.goToPhaseByName('DrawPhase');
