@@ -25,7 +25,7 @@ yarn add ludumjs
 Then using it in your project:
 
 ```js
-import LudumJS from 'ludumjs';
+import LudumJS from 'ludumjs/client';
 
 console.log(LudumJS.Game, LudumJS.Phase);
 ```
@@ -35,7 +35,7 @@ console.log(LudumJS.Game, LudumJS.Phase);
 Entry point of your game must be a JS file importing **LudumJS**:
 
 ```js
-import LudumJS from 'https://unpkg.com/ludumjs@1.0.0';
+import LudumJS from 'https://unpkg.com/ludumjs@2.0.0/client.js';
 
 const myGame = new LudumJS.Game(document.getElementById('game'));
 ```
@@ -104,7 +104,7 @@ class InitPhase extends LudumJS.Phase {
 ```
 
 And that's it for JavaScript! The rest is managed by CSS.  
-If you include the CSS file of **LudumJS**, this rule will be applied: 
+If you include the CSS file of **LudumJS** (https://unpkg.com/ludumjs@2.0.0/ludumjs.css), this rule will be applied: 
 
 ```css
 .ludumjs-game-container * {
