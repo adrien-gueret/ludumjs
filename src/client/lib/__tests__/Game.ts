@@ -1,5 +1,5 @@
-import Game from '../Game.js';
-import Phase from '../Phase.js';
+import Game from '../Game';
+import Phase from '../Phase';
 
 describe('Game', () => {
     describe('constructor', () => {
@@ -96,8 +96,8 @@ describe('Game', () => {
             let newPhase;
 
             beforeEach(() => {
-                currentPhase = new Phase();
-                newPhase = new Phase();
+                currentPhase = new Phase(null);
+                newPhase = new Phase(null);
 
                 currentPhase.end = jest.fn();
                 newPhase.start = jest.fn();

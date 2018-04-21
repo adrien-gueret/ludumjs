@@ -1,4 +1,4 @@
-import { getClickEvent } from '../events.js';
+import { getClickEvent } from '../events';
 
 describe('utils/events', () => {
     describe('getClickEvent', () => {

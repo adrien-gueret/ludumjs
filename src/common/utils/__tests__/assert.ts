@@ -1,4 +1,4 @@
-import assert from '../assert.js';
+import assert from '../assert';
 
 describe('utils/assert', () => {
     describe('when receiving true', () => {

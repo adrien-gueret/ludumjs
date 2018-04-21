@@ -1,8 +1,12 @@
-import assert from './utils/assert.js';
-import Phase from './Phase.js';
+import assert from '../../common/utils/assert';
+import Phase, { PhaseConstructor } from './Phase';
 
 export default class Game {
-    constructor(domContainer) {
+    domContainer: Element;
+    phases: Array<Phase>;
+    currentPhase: Phase | null;
+
+    constructor(domContainer:Element) {
         this.domContainer = domContainer;
         this.phases = [];
         this.currentPhase = null;
@@ -10,11 +14,11 @@ export default class Game {
         this.domContainer.classList.add('ludumjs-game-container');
     }
 
-    start() {
+    start():void {
         this.goToPhase(this.phases[0]);
     }
 
-    registerPhase(PhaseClass) {
+    registerPhase(PhaseClass:PhaseConstructor):void {
         const phaseInstance = new PhaseClass(this);
 
         assert(phaseInstance instanceof Phase, `Game.registerPhase: ${PhaseClass.name} must inherit from LudumJS.Phase`);
@@ -26,15 +30,15 @@ export default class Game {
         this.phases.push(phaseInstance);
     }
 
-    registerPhases(phaseClasses) {
+    registerPhases(phaseClasses:Array<PhaseConstructor>):void {
         phaseClasses.forEach(PhaseClass => this.registerPhase(PhaseClass));
     }
 
-    getPhaseByName(phaseName) {
+    getPhaseByName(phaseName:string):undefined|Phase {
         return this.phases.filter(phase => phase.constructor.name === phaseName)[0];
     }
 
-    goToPhase(targetPhase, ...data) {
+    goToPhase(targetPhase:Phase, ...data):void {
         if (this.currentPhase) {
             this.currentPhase.end();
         }
@@ -43,7 +47,7 @@ export default class Game {
         this.currentPhase.start(...data);
     }
 
-    goToPhaseByName(phaseName, ...data) {
+    goToPhaseByName(phaseName:string, ...data):void {
         this.goToPhase(this.getPhaseByName(phaseName), ...data);
     }
 }

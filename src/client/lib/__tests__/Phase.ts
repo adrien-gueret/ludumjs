@@ -1,9 +1,10 @@
-import Phase from '../Phase.js';
+import Game from '../Game';
+import Phase from '../Phase';
 
 describe('Phase', () => {
     describe('constructor', () => {
         it('should correctly init instance', () => {
-            const game = {};
+            const game = new Game(document.createElement('div'));
             const phase = new Phase(game);
 
             expect(phase.game).toBe(game);
@@ -15,9 +16,7 @@ describe('Phase', () => {
 
         beforeEach(() => {
             class MyAwesomeTestPhase extends Phase {}
-            phase = new MyAwesomeTestPhase({
-                domContainer: document.createElement('div'),
-            });
+            phase = new MyAwesomeTestPhase(new Game(document.createElement('div')));
         });
 
         describe('getClassName', () => {
