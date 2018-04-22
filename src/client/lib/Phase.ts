@@ -1,51 +1,48 @@
-import Game from './game';
+import PhaseCommon from '../../common/lib/Phase';
 import { getClickEvent } from '../utils/events';
+import Game from './game';
 
 const clickEventName = getClickEvent();
 
-export interface PhaseConstructor {
-    new(game): Phase;
-};
-
-export interface PhaseInterface {
-    onClick();
-    onStart(...data:Array<any>):void|boolean;
-    onEnd();
+interface Phase {
+    onClick?();
 }
 
-export default class Phase implements PhaseInterface {
-    game: Game;
-
-    constructor(game:Game) {
-        this.game = game;
-        this.onClick = this.onClick.bind(this);
+abstract class Phase extends PhaseCommon {
+    readonly game: Game;
+    
+    constructor(game: Game) {
+        super(game);
+        this.onClick = this.onClick ? this.onClick.bind(this) : null;
     }
 
-    getClassName():string {
+    getClassName(): string {
         return this.constructor.name
             .replace(/\.?([A-Z]+)/g, (x, y) => `-${y.toLowerCase()}`)
             .replace(/^-/, '');
     }
 
-    /* istanbul ignore next */
-    onClick() {}
-
-    onStart(...data):void|boolean {}
-
-    onEnd() {}
-
-    start(...data:Array<any>):void {
-        if (this.onStart(...data) === false) {
+    start(...data:Array<any>): void {
+        if (super.start(...data) === false) {
             return;
         }
 
-        this.game.domContainer.addEventListener(clickEventName, this.onClick);
+        if (this.onClick) {
+            this.game.domContainer.addEventListener(clickEventName, this.onClick);
+        }
+    
         this.game.domContainer.classList.add(this.getClassName());
     }
 
-    end():void {
-        this.onEnd();
-        this.game.domContainer.removeEventListener(clickEventName, this.onClick);
+    end(): void {
+        super.end();
+
+        if (this.onClick) {
+            this.game.domContainer.removeEventListener(clickEventName, this.onClick);
+        }
+        
         this.game.domContainer.classList.remove(this.getClassName());
     }
 }
+
+export default Phase;

@@ -2,12 +2,33 @@ import Game from '../Game';
 import Phase from '../Phase';
 
 describe('Phase', () => {
+    let MyGame;
+    let MyPhase;
+
+    beforeEach(() => {
+        MyGame = class extends Game {};
+        MyPhase = class extends Phase {
+            onClick() {}
+        };
+    });
+
     describe('constructor', () => {
         it('should correctly init instance', () => {
-            const game = new Game(document.createElement('div'));
-            const phase = new Phase(game);
+            const game = new MyGame(document.createElement('div'));
+            const phase = new MyPhase(game);
 
             expect(phase.game).toBe(game);
+            expect(phase.onClick).toBeInstanceOf(Function);
+        });
+
+        it('should set onClick to null if not defined', () => {
+            MyPhase = class extends Phase {};
+
+            const game = new MyGame(document.createElement('div'));
+            const phase = new MyPhase(game);
+
+            expect(phase.game).toBe(game);
+            expect(phase.onClick).toBeNull();
         });
     });
 
@@ -15,15 +36,14 @@ describe('Phase', () => {
         let phase;
 
         beforeEach(() => {
-            class MyAwesomeTestPhase extends Phase {}
-            phase = new MyAwesomeTestPhase(new Game(document.createElement('div')));
+            phase = new MyPhase(new MyGame(document.createElement('div')));
         });
 
         describe('getClassName', () => {
             it('should return snake-case class name', () => {
                 const className = phase.getClassName();
 
-                expect(className).toBe('my-awesome-test-phase');
+                expect(className).toBe('my-phase');
             });
         });
 
@@ -45,13 +65,23 @@ describe('Phase', () => {
                 expect(domContainer.addEventListener).toHaveBeenCalledWith('click', phase.onClick);
             });
 
+            it('should NOT listen for click event if onClick is null', () => {
+                const { domContainer } = phase.game;
+                domContainer.addEventListener = jest.fn();
+                phase.onClick = null;
+
+                phase.start();
+
+                expect(domContainer.addEventListener).not.toHaveBeenCalled();
+            });
+
             it('should add phase className to game dom container', () => {
                 const { domContainer } = phase.game;
                 domContainer.classList.add = jest.fn();
 
                 phase.start();
 
-                expect(domContainer.classList.add).toHaveBeenCalledWith('my-awesome-test-phase');
+                expect(domContainer.classList.add).toHaveBeenCalledWith('my-phase');
             });
 
             it('should NOT alter game container if onStart return false', () => {
@@ -86,13 +116,23 @@ describe('Phase', () => {
                 expect(domContainer.removeEventListener).toHaveBeenCalledWith('click', phase.onClick);
             });
 
-            it('should remve phase className from game dom container', () => {
+            it('should NOT remove listener for click event is onClick is null', () => {
+                const { domContainer } = phase.game;
+                domContainer.removeEventListener = jest.fn();
+                phase.onClick = null;
+
+                phase.end();
+
+                expect(domContainer.removeEventListener).not.toHaveBeenCalled();
+            });
+
+            it('should remove phase className from game dom container', () => {
                 const { domContainer } = phase.game;
                 domContainer.classList.remove = jest.fn();
 
                 phase.end();
 
-                expect(domContainer.classList.remove).toHaveBeenCalledWith('my-awesome-test-phase');
+                expect(domContainer.classList.remove).toHaveBeenCalledWith('my-phase');
             });
         });
     });

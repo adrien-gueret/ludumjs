@@ -7,9 +7,9 @@ describe('utils/events', () => {
         });
 
         it('should return "touchstart" in given object supports ontouchstart', () => {
-            expect(getClickEvent({
-                ontouchstart() {}
-            })).toBe('touchstart');
+            window.ontouchstart = jest.fn();
+
+            expect(getClickEvent(window)).toBe('touchstart');
         });
     });
 });
