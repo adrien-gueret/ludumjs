@@ -10,7 +10,9 @@
     "url": "https://github.com/adrien-gueret/ludumjs.git"
   },
   "scripts": {
+    "build": "yarn build:client & yarn build:server",
     "build:client": "tsc -p tsconfig.client.json",
+    "build:server": "tsc -p tsconfig.server.json",
     "test": "jest --coverage",
     "test:watch": "jest --coverage --watchAll"
   },
@@ -36,5 +38,8 @@
       "ts",
       "js"
     ]
+  },
+  "dependencies": {
+    "socket.io": "^2.1.0"
   }
 }
