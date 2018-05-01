@@ -3,6 +3,7 @@ import Phase, { PhaseConstructor } from './Phase';
 
 export interface GameConstructor {
     new(...data: Array<any>): Game;
+    name: string;
 };
 
 export default abstract class Game {

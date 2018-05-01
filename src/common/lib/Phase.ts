@@ -2,9 +2,11 @@ import Game from './game';
 
 export interface PhaseConstructor {
     new(game:Game): Phase;
+    name: string;
 };
 
 interface Phase {
+    constructor: PhaseConstructor;
     onStart?(...data): void|boolean;
     onEnd?();
 }
