@@ -5,7 +5,7 @@ import Game from './game';
 const clickEventName = getClickEvent();
 
 interface Phase {
-    onClick?();
+    onClick?(e?: Event);
 }
 
 abstract class Phase extends PhaseCommon {
