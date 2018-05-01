@@ -1,6 +1,10 @@
 import assert from '../utils/assert';
 import Phase, { PhaseConstructor } from './Phase';
 
+export interface GameConstructor {
+    new(...data: Array<any>): Game;
+};
+
 export default abstract class Game {
     readonly phases: Array<Phase>;
     currentPhase: Phase|null;
