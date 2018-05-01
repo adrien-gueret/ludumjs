@@ -4,4 +4,3 @@ yarn.lock
 coverage
 node_modules
 yarn.error
-src

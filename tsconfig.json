@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "allowJs": false,
+        "target": "es6",
+        "module": "CommonJS",
+        "removeComments": true,
+    },
+    "include": [
+        "client.ts",
+        "server.ts",
+        "src/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "__tests__"
+    ]
+}
