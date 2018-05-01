@@ -1,5 +1,5 @@
 import PhaseCommon from '../../common/lib/Phase';
 
-export default class Game extends PhaseCommon {
+export default abstract class Phase extends PhaseCommon {
     
 }

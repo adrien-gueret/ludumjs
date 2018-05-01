@@ -17,7 +17,7 @@ abstract class Phase extends PhaseCommon {
     }
 
     getClassName(): string {
-        return this.constructor.name
+        return this.name
             .replace(/\.?([A-Z]+)/g, (x, y) => `-${y.toLowerCase()}`)
             .replace(/^-/, '');
     }

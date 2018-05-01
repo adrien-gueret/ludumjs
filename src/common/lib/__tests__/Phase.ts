@@ -8,6 +8,7 @@ describe('Phase', () => {
     beforeEach(() => {
         MyGame = class extends Game {};
         MyPhase = class extends Phase {
+            name = 'MyPhase';
             onStart() {}
             onEnd() {}
         };

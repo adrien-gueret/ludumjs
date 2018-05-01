@@ -7,7 +7,9 @@ describe('Game', () => {
 
     beforeEach(() => {
         MyGame = class extends Game {};
-        MyPhase = class extends Phase {};
+        MyPhase = class extends Phase {
+            name = 'MyPhase';
+        };
     });
 
     describe('constructor', () => {
@@ -64,7 +66,9 @@ describe('Game', () => {
 
         describe('registerPhases', () => {
             it('should register all given phases classes', () => {
-                class MyPhase2 extends Phase {}
+                class MyPhase2 extends Phase {
+                    name = 'MyPhase2';
+                }
                 game.registerPhase = jest.fn();
 
                 game.registerPhases([MyPhase, MyPhase2]);
@@ -75,7 +79,9 @@ describe('Game', () => {
         });
 
         describe('getPhaseByName', () => {
-            class MyPhase2 extends Phase {}
+            class MyPhase2 extends Phase {
+                name = 'MyPhase2';
+            }
 
             beforeEach(() => {
                 game.registerPhases([MyPhase, MyPhase2]);

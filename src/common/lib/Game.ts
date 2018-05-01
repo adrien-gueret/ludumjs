@@ -3,7 +3,6 @@ import Phase, { PhaseConstructor } from './Phase';
 
 export interface GameConstructor {
     new(...data: Array<any>): Game;
-    name: string;
 };
 
 export default abstract class Game {
@@ -22,11 +21,12 @@ export default abstract class Game {
     registerPhase(PhaseClass: PhaseConstructor): void {
         const phaseInstance = new PhaseClass(this);
 
-        assert(phaseInstance instanceof Phase, `Game.registerPhase: ${PhaseClass.name} must inherit from LudumJS.Phase`);
+        assert(phaseInstance instanceof Phase, `Game.registerPhase: ${PhaseClass.toString()} must inherit from LudumJS.Phase`);
+        assert(!!phaseInstance.name, `Game.registerPhase: ${PhaseClass.toString()} must define a readonly "name" property to its instances.`);
         
-        const isPhaseAlreadyExisted = this.phases.some(phase => phase.constructor.name === PhaseClass.name);
+        const isPhaseAlreadyExisted = this.phases.some(phase => phase.name === phaseInstance.name);
 
-        assert(!isPhaseAlreadyExisted, `Game.registerPhase: ${PhaseClass.name} is already registered`);
+        assert(!isPhaseAlreadyExisted, `Game.registerPhase: ${phaseInstance.name} is already registered`);
 
         this.phases.push(phaseInstance);
     }
@@ -36,7 +36,7 @@ export default abstract class Game {
     }
 
     getPhaseByName(phaseName: string): undefined|Phase {
-        return this.phases.filter(phase => phase.constructor.name === phaseName)[0];
+        return this.phases.filter(phase => phase.name === phaseName)[0];
     }
 
     goToPhase(targetPhase: Phase, ...data): void {

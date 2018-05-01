@@ -8,6 +8,7 @@ describe('Phase', () => {
     beforeEach(() => {
         MyGame = class extends Game {};
         MyPhase = class extends Phase {
+            name = 'MyPhase';
             onClick() {}
         };
     });
@@ -22,7 +23,9 @@ describe('Phase', () => {
         });
 
         it('should set onClick to null if not defined', () => {
-            MyPhase = class extends Phase {};
+            MyPhase = class extends Phase {
+                name = 'MyPhase';
+            };
 
             const game = new MyGame(document.createElement('div'));
             const phase = new MyPhase(game);
