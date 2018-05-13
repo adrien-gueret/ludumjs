@@ -4,8 +4,32 @@ import Game from './game';
 
 const clickEventName = getClickEvent();
 
+interface OnActionPayload {
+    action: string,
+    event: Event,
+    target: HTMLElement,
+}
+
 interface Phase {
-    onClick?(e?: Event);
+    onAction?(payload: OnActionPayload): void;
+}
+
+function getFirstElementWithAction(element: HTMLElement) {
+    let target = element;
+
+    if (!target) {
+        return null;
+    }
+
+    do {
+        if (target.dataset && 'action' in target.dataset) {
+            return target;
+        }
+
+        target = target.parentNode as HTMLElement;
+    } while (target);
+
+    return null;
 }
 
 abstract class Phase extends PhaseCommon {
@@ -13,7 +37,25 @@ abstract class Phase extends PhaseCommon {
     
     constructor(game: Game) {
         super(game);
-        this.onClick = this.onClick ? this.onClick.bind(this) : null;
+        this.onActionHandler = this.onAction ? this.wrapOnAction() : null;
+    }
+
+    private onActionHandler() {};
+
+    private wrapOnAction() {
+        return ((event: Event) => {
+            const target = getFirstElementWithAction(event.target as HTMLElement);
+
+            if (!target) {
+                return;
+            }
+
+            this.onAction({
+                action: target.dataset.action,
+                event,
+                target,
+            });
+        }).bind(this);
     }
 
     getClassName(): string {
@@ -27,8 +69,8 @@ abstract class Phase extends PhaseCommon {
             return;
         }
 
-        if (this.onClick) {
-            this.game.domContainer.addEventListener(clickEventName, this.onClick);
+        if (this.onAction) {
+            this.game.domContainer.addEventListener(clickEventName, this.onActionHandler);
         }
     
         this.game.domContainer.classList.add(this.getClassName());
@@ -37,8 +79,8 @@ abstract class Phase extends PhaseCommon {
     end(): void {
         super.end();
 
-        if (this.onClick) {
-            this.game.domContainer.removeEventListener(clickEventName, this.onClick);
+        if (this.onAction) {
+            this.game.domContainer.removeEventListener(clickEventName, this.onActionHandler);
         }
         
         this.game.domContainer.classList.remove(this.getClassName());

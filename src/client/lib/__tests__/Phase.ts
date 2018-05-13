@@ -9,7 +9,7 @@ describe('Phase', () => {
         MyGame = class extends Game {};
         MyPhase = class extends Phase {
             name = 'MyPhase';
-            onClick() {}
+            onAction() {}
         };
     });
 
@@ -19,10 +19,10 @@ describe('Phase', () => {
             const phase = new MyPhase(game);
 
             expect(phase.game).toBe(game);
-            expect(phase.onClick).toBeInstanceOf(Function);
+            expect(phase.onActionHandler).toBeDefined();
         });
 
-        it('should set onClick to null if not defined', () => {
+        it('should set onActionHandler to null if onAction is NOT defined', () => {
             MyPhase = class extends Phase {
                 name = 'MyPhase';
             };
@@ -31,7 +31,20 @@ describe('Phase', () => {
             const phase = new MyPhase(game);
 
             expect(phase.game).toBe(game);
-            expect(phase.onClick).toBeNull();
+            expect(phase.onActionHandler).toBeNull();
+        });
+
+        it('should set onActionHandler to function if onAction is defined', () => {
+            MyPhase = class extends Phase {
+                name = 'MyPhase';
+                onAction() {};
+            };
+
+            const game = new MyGame(document.createElement('div'));
+            const phase = new MyPhase(game);
+
+            expect(phase.game).toBe(game);
+            expect(phase.onActionHandler).toBeInstanceOf(Function);
         });
     });
 
@@ -65,13 +78,13 @@ describe('Phase', () => {
 
                 phase.start();
 
-                expect(domContainer.addEventListener).toHaveBeenCalledWith('click', phase.onClick);
+                expect(domContainer.addEventListener).toHaveBeenCalledWith('click', phase.onActionHandler);
             });
 
-            it('should NOT listen for click event if onClick is null', () => {
+            it('should NOT listen for click event if onAction is null', () => {
                 const { domContainer } = phase.game;
                 domContainer.addEventListener = jest.fn();
-                phase.onClick = null;
+                phase.onAction = null;
 
                 phase.start();
 
@@ -116,13 +129,13 @@ describe('Phase', () => {
 
                 phase.end();
 
-                expect(domContainer.removeEventListener).toHaveBeenCalledWith('click', phase.onClick);
+                expect(domContainer.removeEventListener).toHaveBeenCalledWith('click', phase.onActionHandler);
             });
 
-            it('should NOT remove listener for click event is onClick is null', () => {
+            it('should NOT remove listener for click event is onAction is null', () => {
                 const { domContainer } = phase.game;
                 domContainer.removeEventListener = jest.fn();
-                phase.onClick = null;
+                phase.onAction = null;
 
                 phase.end();
 
@@ -136,6 +149,51 @@ describe('Phase', () => {
                 phase.end();
 
                 expect(domContainer.classList.remove).toHaveBeenCalledWith('my-phase');
+            });
+        });
+
+        describe('wrapOnAction', () => {
+            let myEvent;
+            let onActionWrapped;
+
+            beforeEach(() => {
+                myEvent = {
+                    target: null,
+                };
+
+                onActionWrapped = phase.wrapOnAction();
+                phase.onAction = jest.fn();
+            });
+
+            it('should NOT call onAction if event has no targets', () => {
+                onActionWrapped(myEvent);
+                expect(phase.onAction).not.toHaveBeenCalled();
+            });
+
+            it('should NOT call onAction if event has no targets with data-action', () => {
+                const parentNode = document.createElement('div');
+                myEvent.target = document.createElement('div');
+
+                parentNode.appendChild(myEvent.target);
+
+                onActionWrapped(myEvent);
+                expect(phase.onAction).not.toHaveBeenCalled();
+            });
+
+            it('should call onAction if event has target with data-action', () => {
+                const nodeWithAction = document.createElement('div');
+                myEvent.target = document.createElement('div');
+
+                nodeWithAction.dataset.action = 'test';
+                nodeWithAction.appendChild(myEvent.target);
+
+                onActionWrapped(myEvent);
+
+                expect(phase.onAction).toHaveBeenCalledWith({
+                    action: 'test',
+                    event: myEvent,
+                    target: nodeWithAction,
+                });
             });
         });
     });
