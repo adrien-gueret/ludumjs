@@ -50,9 +50,11 @@ describe('Phase', () => {
 
     describe('other methods', () => {
         let phase;
+        let game;
 
         beforeEach(() => {
-            phase = new MyPhase(new MyGame(document.createElement('div')));
+            game = new MyGame(document.createElement('div'));
+            phase = new MyPhase(game);
         });
 
         describe('getClassName', () => {

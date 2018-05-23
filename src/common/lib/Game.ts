@@ -14,11 +14,12 @@ export default abstract class Game {
         this.currentPhase = null;
     }
 
-    start(): void {
+    start(): this {
         this.goToPhase(this.phases[0]);
+        return this;
     }
 
-    registerPhase(PhaseClass: PhaseConstructor): void {
+    registerPhase(PhaseClass: PhaseConstructor): this {
         const phaseInstance = new PhaseClass(this);
 
         assert(phaseInstance instanceof Phase, `Game.registerPhase: ${PhaseClass.toString()} must inherit from LudumJS.Phase`);
@@ -29,10 +30,13 @@ export default abstract class Game {
         assert(!isPhaseAlreadyExisted, `Game.registerPhase: ${phaseInstance.name} is already registered`);
 
         this.phases.push(phaseInstance);
+
+        return this;
     }
 
-    registerPhases(phaseClasses: Array<PhaseConstructor>): void {
+    registerPhases(phaseClasses: Array<PhaseConstructor>): this {
         phaseClasses.forEach(PhaseClass => this.registerPhase(PhaseClass));
+        return this;
     }
 
     getPhaseByName(phaseName: string): undefined|Phase {

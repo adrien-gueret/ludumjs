@@ -40,7 +40,7 @@ abstract class Phase extends PhaseCommon {
         this.onActionHandler = this.onAction ? this.wrapOnAction() : null;
     }
 
-    private onActionHandler() {};
+    private onActionHandler: Function|null;
 
     private wrapOnAction() {
         return ((event: Event) => {

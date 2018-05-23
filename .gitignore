@@ -2,5 +2,6 @@
 coverage
 node_modules
 yarn.error
+yarn-error.log
 dist
 *.js
