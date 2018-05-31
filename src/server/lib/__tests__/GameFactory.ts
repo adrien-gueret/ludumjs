@@ -53,14 +53,14 @@ describe('GameFactory', () => {
     });
 
     describe('onSocketConnection', () => {
-        it('should emit "connection" event', () => {
+        it('should emit "connection" event and send given data', () => {
             const socket = {
                 emit: jest.fn(),
             };
 
-            factory.onSocketConnection(socket);
+            factory.onSocketConnection(socket, 'foo');
 
-            expect(socket.emit).toHaveBeenCalledWith('connection');
+            expect(socket.emit).toHaveBeenCalledWith('connection', 'foo');
         });
     });
 });

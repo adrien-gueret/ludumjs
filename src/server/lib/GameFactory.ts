@@ -1,8 +1,10 @@
 import * as socketio from 'socket.io';
 
 import Game, { GameConstructor } from '../../common/lib/Game';
+import withSockeListeners from '../../common/lib/withSocketListeners';
+import applyMixins from '../../common/utils/applyMixins';
 
-export default abstract class GameFactory {
+export default abstract class GameFactory implements withSockeListeners {
     private GameClass: GameConstructor;
     private io: socketio.Server;
 
@@ -23,8 +25,13 @@ export default abstract class GameFactory {
         return new this.GameClass(...data);
     }
 
-    onSocketConnection(socket: socketio.Socket) {
-        console.log('connected');
-        socket.emit('connection');
+    onSocketConnection(socket: socketio.Socket, data?: string|object|Array<any>) {
+        this.attachSocketEvent(socket);
+        socket.emit('connection', data);
     }
+
+    // withSocketListeners
+    attachSocketEvent: (socket: socketio.Socket) => void;
 }
+
+applyMixins(GameFactory, [withSockeListeners]);
