@@ -16,7 +16,7 @@ export default abstract class GameFactory implements withSockeListeners {
     listen(port : Number = 1337) {
         this.io = socketio(port);
 
-        this.io.on('connection', this.onSocketConnection);
+        this.io.on('connection', this.onSocketConnection.bind(this));
 
         console.log(`[LudumJS] server listening on port ${port}`);
     }
@@ -28,7 +28,7 @@ export default abstract class GameFactory implements withSockeListeners {
     onSocketConnection(socket: socketio.Socket, data?: string|object|Array<any>) {
         this.attachSocketEvent(socket);
         socket.emit('connection', data);
-    }
+    };
 
     // withSocketListeners
     attachSocketEvent: (socket: socketio.Socket) => void;

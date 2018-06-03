@@ -46,6 +46,7 @@ describe('GameFactory', () => {
         });
 
         it('should listen for connections', () => {
+            jest.spyOn(factory.onSocketConnection, 'bind').mockReturnValueOnce(factory.onSocketConnection);
             factory.listen();
     
             expect(factory.io.on).toHaveBeenCalledWith('connection', factory.onSocketConnection);
