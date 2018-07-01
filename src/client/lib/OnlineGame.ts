@@ -1,6 +1,6 @@
 import socketio from 'socket.io-client';
 
-import withSocketListeners from '../../common/lib/withSocketListeners';
+import withSocketListeners, { socketEvent } from '../../common/lib/withSocketListeners';
 import applyMixins from '../../common/utils/applyMixins';
 
 import Game from './Game';
@@ -21,10 +21,18 @@ export default abstract class OnlineGame extends Game implements withSocketListe
 
     connect(port: Number, serverUrl = getRootUrl()): SocketIO.Socket {
         this.socket = socketio(`${serverUrl}:${port}`);
-
         this.attachSocketEvent(this.socket);
 
         return this.socket;
+    }
+
+    getSocket(): SocketIO.Socket {
+        return this.socket;
+    }
+
+    @socketEvent
+    ludumjs_switchPhase(socket, { phaseName, data }) {
+        this.goToPhaseByName(phaseName, ...data);
     }
 
     // withSocketListeners

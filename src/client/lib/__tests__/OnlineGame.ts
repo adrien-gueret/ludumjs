@@ -10,12 +10,18 @@ describe('OnlineGame', () => {
 
     let domContainer;
     let game;
+    let mockedSocket;
 
     beforeEach(() => {
         domContainer = document.createElement('div');
         game = new MyGame(domContainer);
 
+        mockedSocket = {
+            on: jest.fn(),
+        },
+
         socketio.mockReset();
+        socketio.mockReturnValue(mockedSocket);
     });
 
     describe('constructor', () => {
@@ -33,6 +39,27 @@ describe('OnlineGame', () => {
         it('should connect to current location by default', () => {
             game.connect(1337);
             expect(socketio).toHaveBeenCalledWith('http://my-tests.com:1337')
+        });
+    });
+
+    describe('getSocket', () => {
+        it('should return instance socket', () => {
+            game.connect(1337);
+            expect(game.getSocket()).toBe(mockedSocket);
+        });
+    });
+
+    describe('ludumjs_switchPhase', () => {
+        it('should go to given phase', () => {
+            spyOn(game, 'goToPhaseByName');
+
+            game.ludumjs_switchPhase(null, {
+                phaseName: 'TestPhase',
+                data: ['foo', 'bar'],
+
+            });
+
+            expect(game.goToPhaseByName).toHaveBeenCalledWith('TestPhase', 'foo', 'bar');
         });
     });
 });

@@ -1,4 +1,8 @@
-jest.mock('socket.io', () => jest.fn(() => ({ on: jest.fn() })));
+jest.mock('socket.io', () => jest.fn(() => ({
+    on: jest.fn(),
+    disconnect: jest.fn(),
+    removeAllListeners: jest.fn(),
+})));
 
 import * as socketio from 'socket.io';
 import GameFactory from '../GameFactory';
@@ -25,6 +29,15 @@ describe('GameFactory', () => {
             const instance = factory.create('foo', 'bar');
             
             expect(instance).toBeInstanceOf(MyGame);
+        });
+
+        it('should attach "onEnd" listener to created game', () => {
+            spyOn(factory, 'deleteGame');
+            const instance = factory.create(socketio(), 'bar');
+        
+            instance.end();
+            
+            expect(factory.deleteGame).toHaveBeenCalledWith(instance);
         });
     });
 
@@ -62,6 +75,22 @@ describe('GameFactory', () => {
             factory.onSocketConnection(socket, 'foo');
 
             expect(socket.emit).toHaveBeenCalledWith('connection', 'foo');
+        });
+    });
+
+    describe('deleteGame', () => {
+        it('should remove given game from list of games', () => {
+            const gameToDelete = factory.create();
+            factory.create();
+            factory.create();
+
+            expect(factory.games.length).toBe(3);
+            expect(factory.games).toContain(gameToDelete);
+
+            factory.deleteGame(gameToDelete);
+
+            expect(factory.games.length).toBe(2);
+            expect(factory.games).not.toContain(gameToDelete);
         });
     });
 });

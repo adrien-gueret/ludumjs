@@ -1,4 +1,4 @@
-import withSocketListeners, { socketEvent } from '../withSocketListeners';
+import withSocketListeners, { socketCallbackWrapper, socketEvent } from '../withSocketListeners';
 import applyMixins from '../../utils/applyMixins';
 
 describe('withSocketListeners', () => {
@@ -40,5 +40,17 @@ describe('withSocketListeners', () => {
                 });
            });
        });
+    });
+
+    describe('socketCallbackWrapper', () => {
+        it('should wrapper given function into a top function', () => {
+            const callback = jest.fn();
+            const socket = {};
+            const wrapper = socketCallbackWrapper(callback, socket);
+
+            wrapper('foo');
+
+            expect(callback).toHaveBeenCalledWith(socket, 'foo');
+        });
     });
 });

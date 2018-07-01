@@ -1,11 +1,23 @@
+export function socketCallbackWrapper(callback: Function, socket) {
+    return eventData => callback(socket, eventData);
+}
+
 export default class withSocketListeners {
     static socketEvents: { [s: string]: Function };
 
     attachSocketEvent(socket): void {
-        const thisConstructor = <typeof withSocketListeners>this.constructor;
+        let socketHandler = <typeof withSocketListeners>this.constructor;
 
-        for (let socketEvent in thisConstructor.socketEvents) {
-            socket.on(socketEvent, thisConstructor.socketEvents[socketEvent].bind(this));
+        while (socketHandler) {
+            for (let socketEvent in socketHandler.socketEvents) {
+                const bindedCallback = socketHandler.socketEvents[socketEvent].bind(this);
+    
+                const handler = socketCallbackWrapper(bindedCallback, socket);
+    
+                socket.on(socketEvent, handler);
+            }
+
+            socketHandler = Object.getPrototypeOf(socketHandler);
         }
     }
 }

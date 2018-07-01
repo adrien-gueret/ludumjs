@@ -7,10 +7,12 @@ import applyMixins from '../../common/utils/applyMixins';
 export default abstract class GameFactory implements withSockeListeners {
     private GameClass: GameConstructor;
     private io: socketio.Server;
+    private games: Array<Game>;
 
     constructor(GameClass: GameConstructor) {
         this.GameClass = GameClass;
         this.io = null;
+        this.games = [];
     }
 
     listen(port : Number = 1337) {
@@ -22,7 +24,16 @@ export default abstract class GameFactory implements withSockeListeners {
     }
 
     create(...data:Array<any>): Game {
-        return new this.GameClass(...data);
+        const game = new (Array.bind.apply(this.GameClass, [null].concat(data)));
+        this.games.push(game);
+
+        game.onEnd(() => this.deleteGame(game));
+
+        return game;
+    }
+
+    deleteGame(gameToDelete: Game) {
+        this.games = this.games.filter(game => game !== gameToDelete);
     }
 
     onSocketConnection(socket: socketio.Socket, data?: string|object|Array<any>) {

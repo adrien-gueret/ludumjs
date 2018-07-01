@@ -12,6 +12,16 @@ export function shuffleArray<T>(array: Array<T>): Array<T> {
     return array;
 }
 
+export function convert1DIndexInto2DIndex(index: number, nbrColumnsIn2DArray: number)
+    : { row: number; column: number; } {
+   
+    return {
+        row: Math.floor(index / nbrColumnsIn2DArray ),
+        column: (index % nbrColumnsIn2DArray),
+    };
+}
+
 export default {
+    convert1DIndexInto2DIndex,
     shuffleArray,
 };
