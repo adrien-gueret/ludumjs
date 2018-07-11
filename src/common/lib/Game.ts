@@ -14,8 +14,8 @@ export default abstract class Game {
         this.currentPhase = null;
     }
 
-    start(): this {
-        this.goToPhase(this.phases[0]);
+    start(...data): this {
+        this.goToPhase(this.phases[0], ...data);
         return this;
     }
 
