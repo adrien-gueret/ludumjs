@@ -1,6 +1,6 @@
 # LudumJS
 
-A small framework helping to create board games with JavaScript.
+A framework helping to create board games with JavaScript.
 
 ## What is it?
 
@@ -8,7 +8,7 @@ A small framework helping to create board games with JavaScript.
 
 For example, in a cards game like _Magic: The Gathering_, you draw a card during the draw phase, you can play cards during the main phase and you can attack the opponent during the combat phase.
 
-**LudumJS** provides a way to easily manage these phases. That's just it!
+**LudumJS** provides a way to easily manage these phases.
 
 Main benefit of using **LudumJS** is to have a well structured code for your board games, thanks to the concept of "one game phase = one JS class".
 
@@ -62,17 +62,21 @@ class DrawPhase extends Phase {
         console.log('Draw phase starts', this.game);
     }
 
-    onClick(e) {
-        console.log('click', e, this.game);
+    onAction({ action, target }) {
+        console.log(action, target, this.game);
     }
 
     onEnd() {
         console.log('Draw phase ends', this.game);
     }
 }
+
+DrawPhase.name = 'DrawPhase';
 ```
 
-_onStart_, _onClick_ and _onEnd_ are automatically called by **LudumJS** when neededs.
+_onStart_, _onAction_ and _onEnd_ are automatically called by **LudumJS** when neededs.
+
+_onAction_ is called when a DOM element is clicked. The _action_ property it receives as argument is the value of the `data-action` attribute of this clicked DOM element.
 
 Once your phases are defined, you have to register them into your game:
 
@@ -90,17 +94,18 @@ myGame.registerPhases([
 myGame.start(); // Go to first registered phase
 ```
 
-The Phase classes will contain the most part of your game code, thanks to the callbacks _onStart_, _onClick_ and _onEnd_. Note that inside these callbacks, you can access the game instance via `this.game`.
+The Phase classes will contain the most part of your game code, thanks to the callbacks _onStart_, _onAction_ and _onEnd_. Note that inside these callbacks, you can access the game instance via `this.game`.
 
-In order to change phase, you have to call the method `goToPhaseByName` from your game isntance:
+In order to change phase, you have to call the method `goToPhaseByName` from your game instance:
 
 ```js
 class InitPhase extends Phase {
-    onClick() {
+    onAction() {
         // When clicking during InitPhase, go to DrawPhase
         this.game.goToPhaseByName('DrawPhase');
     }
 }
+InitPhase.name = 'InitPhase';
 ```
 
 And that's it for JavaScript! The rest is managed by CSS.  
@@ -114,7 +119,7 @@ If you include the CSS file of **LudumJS** (https://unpkg.com/ludumjs@2.0.0/ludu
 
 That means that ALL elements inside your game container won't be clickable anymore. That's the trick that will allow you to control the possible actions on each phase.
 
-When switching phase, **LudumJS** automatically applies a className to the game container. This className is the snake-case version of the active phase. Thanks to that, you can use CSS to define which can be clickable according to the current phase.
+When switching phase, **LudumJS** automatically applies a className to the game container. This className is the snake-case version of the active phase name. Thanks to that, you can use CSS to define which can be clickable according to the current phase.
 
 Please find below a basic example:
 
