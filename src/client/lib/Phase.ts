@@ -1,4 +1,4 @@
-import PhaseCommon from '../../common/lib/Phase';
+import PhaseCommon, { PhaseConstructor } from '../../common/lib/Phase';
 import { getClickEvent } from '../utils/events';
 import Game from './game';
 
@@ -59,7 +59,7 @@ abstract class Phase extends PhaseCommon {
     }
 
     getClassName(): string {
-        return this.name
+        return (this.constructor as PhaseConstructor).id
             .replace(/\.?([A-Z]+)/g, (x, y) => `-${y.toLowerCase()}`)
             .replace(/^-/, '');
     }

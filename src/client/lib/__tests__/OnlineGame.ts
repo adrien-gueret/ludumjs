@@ -51,7 +51,7 @@ describe('OnlineGame', () => {
 
     describe('ludumjs_switchPhase', () => {
         it('should go to given phase', () => {
-            spyOn(game, 'goToPhaseByName');
+            spyOn(game, 'goToPhaseById');
 
             game.ludumjs_switchPhase(null, {
                 phaseName: 'TestPhase',
@@ -59,7 +59,7 @@ describe('OnlineGame', () => {
 
             });
 
-            expect(game.goToPhaseByName).toHaveBeenCalledWith('TestPhase', 'foo', 'bar');
+            expect(game.goToPhaseById).toHaveBeenCalledWith('TestPhase', 'foo', 'bar');
         });
     });
 });

@@ -8,7 +8,7 @@ describe('Phase', () => {
     beforeEach(() => {
         MyGame = class extends Game {};
         MyPhase = class extends Phase {
-            name = 'MyPhase';
+            static id = 'MyPhase';
             onAction() {}
         };
     });
@@ -24,7 +24,7 @@ describe('Phase', () => {
 
         it('should set onActionHandler to null if onAction is NOT defined', () => {
             MyPhase = class extends Phase {
-                name = 'MyPhase';
+                static id = 'MyPhase';
             };
 
             const game = new MyGame(document.createElement('div'));
@@ -36,7 +36,7 @@ describe('Phase', () => {
 
         it('should set onActionHandler to function if onAction is defined', () => {
             MyPhase = class extends Phase {
-                name = 'MyPhase';
+                static id = 'MyPhase';
                 onAction() {};
             };
 

@@ -2,6 +2,7 @@ import Game from './game';
 
 export interface PhaseConstructor {
     new(game:Game): Phase;
+    readonly id: string;
 };
 
 interface Phase {
@@ -11,7 +12,7 @@ interface Phase {
 
 abstract class Phase {
     readonly game: Game;
-    abstract readonly name: string;
+    static readonly id: string;
 
     constructor(game: Game) {
         this.game = game;

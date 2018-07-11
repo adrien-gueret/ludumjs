@@ -8,7 +8,7 @@ describe('Game', () => {
     beforeEach(() => {
         MyGame = class extends Game {};
         MyPhase = class extends Phase {
-            name = 'MyPhase';
+            static id = 'MyPhase';
         };
     });
 
@@ -67,7 +67,7 @@ describe('Game', () => {
         describe('registerPhases', () => {
             it('should register all given phases classes', () => {
                 class MyPhase2 extends Phase {
-                    name = 'MyPhase2';
+                    static id = 'MyPhase2';
                 }
                 game.registerPhase = jest.fn();
 
@@ -78,9 +78,9 @@ describe('Game', () => {
             });
         });
 
-        describe('getPhaseByName', () => {
+        describe('getPhaseById', () => {
             class MyPhase2 extends Phase {
-                name = 'MyPhase2';
+                static id = 'MyPhase2';
             }
 
             beforeEach(() => {
@@ -88,12 +88,12 @@ describe('Game', () => {
             });
 
             it('should return corresponding phase', () => {
-                const phase = game.getPhaseByName('MyPhase2');
+                const phase = game.getPhaseById('MyPhase2');
                 expect(phase).toBeInstanceOf(MyPhase2);
             });
 
             it('should return undefined if phase is not found', () => {
-                const phase = game.getPhaseByName('MyPhase3');
+                const phase = game.getPhaseById('MyPhase3');
                 expect(phase).toBeUndefined();
             });
         });
@@ -132,12 +132,12 @@ describe('Game', () => {
             });
         });
 
-        describe('goToPhaseByName', () => {
+        describe('goToPhaseById', () => {
             it('should be an helper for goToPhase method', () => {
                 game.registerPhase(MyPhase);
                 game.goToPhase = jest.fn();
 
-                game.goToPhaseByName('MyPhase', 'foo', 'bar');
+                game.goToPhaseById('MyPhase', 'foo', 'bar');
 
                 expect(game.goToPhase).toHaveBeenCalledWith(expect.any(MyPhase), 'foo', 'bar');
             });

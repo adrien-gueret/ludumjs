@@ -71,7 +71,7 @@ class DrawPhase extends Phase {
     }
 }
 
-DrawPhase.name = 'DrawPhase';
+DrawPhase.id = 'DrawPhase';
 ```
 
 _onStart_, _onAction_ and _onEnd_ are automatically called by **LudumJS** when neededs.
@@ -96,16 +96,16 @@ myGame.start(); // Go to first registered phase
 
 The Phase classes will contain the most part of your game code, thanks to the callbacks _onStart_, _onAction_ and _onEnd_. Note that inside these callbacks, you can access the game instance via `this.game`.
 
-In order to change phase, you have to call the method `goToPhaseByName` from your game instance:
+In order to change phase, you have to call the method `goToPhaseById` from your game instance:
 
 ```js
 class InitPhase extends Phase {
     onAction() {
         // When clicking during InitPhase, go to DrawPhase
-        this.game.goToPhaseByName('DrawPhase');
+        this.game.goToPhaseById('DrawPhase');
     }
 }
-InitPhase.name = 'InitPhase';
+InitPhase.id = 'InitPhase';
 ```
 
 And that's it for JavaScript! The rest is managed by CSS.  
@@ -119,7 +119,7 @@ If you include the CSS file of **LudumJS** (https://unpkg.com/ludumjs@2.0.0/ludu
 
 That means that ALL elements inside your game container won't be clickable anymore. That's the trick that will allow you to control the possible actions on each phase.
 
-When switching phase, **LudumJS** automatically applies a className to the game container. This className is the snake-case version of the active phase name. Thanks to that, you can use CSS to define which can be clickable according to the current phase.
+When switching phase, **LudumJS** automatically applies a className to the game container. This className is the snake-case version of the active phase id. Thanks to that, you can use CSS to define which can be clickable according to the current phase.
 
 Please find below a basic example:
 

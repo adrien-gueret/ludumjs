@@ -32,7 +32,7 @@ export default abstract class OnlineGame extends Game implements withSocketListe
 
     @socketEvent
     ludumjs_switchPhase(socket, { phaseName, data }) {
-        this.goToPhaseByName(phaseName, ...data);
+        this.goToPhaseById(phaseName, ...data);
     }
 
     // withSocketListeners

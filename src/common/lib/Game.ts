@@ -23,11 +23,11 @@ export default abstract class Game {
         const phaseInstance = new PhaseClass(this);
 
         assert(phaseInstance instanceof Phase, `Game.registerPhase: ${PhaseClass.toString()} must inherit from LudumJS.Phase`);
-        assert(!!phaseInstance.name, `Game.registerPhase: ${PhaseClass.toString()} must define a readonly "name" property to its instances.`);
+        assert(!!PhaseClass.id, `Game.registerPhase: ${PhaseClass.toString()} must have an "id" static property.`);
         
-        const isPhaseAlreadyExisted = this.phases.some(phase => phase.name === phaseInstance.name);
+        const isPhaseAlreadyExisted = this.phases.some(phase => (phase.constructor as PhaseConstructor).id === PhaseClass.id);
 
-        assert(!isPhaseAlreadyExisted, `Game.registerPhase: ${phaseInstance.name} is already registered`);
+        assert(!isPhaseAlreadyExisted, `Game.registerPhase: ${PhaseClass.id} is already registered`);
 
         this.phases.push(phaseInstance);
 
@@ -39,8 +39,8 @@ export default abstract class Game {
         return this;
     }
 
-    getPhaseByName(phaseName: string): undefined|Phase {
-        return this.phases.filter(phase => phase.name === phaseName)[0];
+    getPhaseById(phaseId: string): undefined|Phase {
+        return this.phases.filter(phase => (phase.constructor as PhaseConstructor).id === phaseId)[0];
     }
 
     goToPhase(targetPhase: Phase, ...data): void {
@@ -52,7 +52,7 @@ export default abstract class Game {
         this.currentPhase.start(...data);
     }
 
-    goToPhaseByName(phaseName: string, ...data): void {
-        this.goToPhase(this.getPhaseByName(phaseName), ...data);
+    goToPhaseById(phaseId: string, ...data): void {
+        this.goToPhase(this.getPhaseById(phaseId), ...data);
     }
 }
