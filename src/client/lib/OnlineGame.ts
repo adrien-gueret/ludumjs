@@ -14,7 +14,7 @@ function getRootUrl() {
 export default abstract class OnlineGame extends Game implements withSocketListeners {
     private socket: SocketIO.Socket;
 
-    constructor(domContainer: Element) {
+    constructor(domContainer: HTMLElement) {
         super(domContainer);
         this.socket = null;
     }
