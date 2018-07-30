@@ -1,6 +1,6 @@
 {
   "name": "ludumjs",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Small framework helping to create board games",
   "main": "index.js",
   "author": "Adrien Guéret",
