@@ -7,7 +7,7 @@ import applyMixins from '../../common/utils/applyMixins';
 export default abstract class GameFactory implements withSockeListeners {
     private GameClass: GameConstructor;
     private io: socketio.Server;
-    private games: Array<Game>;
+    protected games: Array<Game>;
 
     constructor(GameClass: GameConstructor) {
         this.GameClass = GameClass;
