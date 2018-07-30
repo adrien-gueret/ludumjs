@@ -15,10 +15,16 @@
 	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
 	transform: translateY(999px);
 	transition: transform 200ms;
+	font-size: 1.5rem;
+	line-height: 3rem;
 }
 
 .ludumjs-dialog--visible {
 	transform: translateY(0);
+}
+
+.ludumjs-dialog--visible [data-action] {
+	pointer-events: initial;
 }
 
 .ludumjs-dialogs-container {
