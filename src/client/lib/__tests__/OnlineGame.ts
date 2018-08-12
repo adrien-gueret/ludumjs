@@ -40,6 +40,11 @@ describe('OnlineGame', () => {
             game.connect(1337);
             expect(socketio).toHaveBeenCalledWith('http://my-tests.com:1337')
         });
+
+        it('should connect to server without port', () => {
+            game.connect();
+            expect(socketio).toHaveBeenCalledWith('http://my-tests.com')
+        });
     });
 
     describe('getSocket', () => {

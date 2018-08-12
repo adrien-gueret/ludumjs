@@ -19,8 +19,8 @@ export default abstract class OnlineGame extends Game implements withSocketListe
         this.socket = null;
     }
 
-    connect(port: Number, serverUrl = getRootUrl()): SocketIO.Socket {
-        this.socket = socketio(`${serverUrl}:${port}`);
+    connect(port: Number = null, serverUrl = getRootUrl()): SocketIO.Socket {
+        this.socket = socketio(port === null ? serverUrl : `${serverUrl}:${port}`);
         this.attachSocketEvent(this.socket);
 
         return this.socket;
