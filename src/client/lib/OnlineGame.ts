@@ -37,6 +37,7 @@ export default abstract class OnlineGame extends Game implements withSocketListe
 
     // withSocketListeners
     attachSocketEvent: (socket: SocketIO.Socket) => void;
+    removeSocketEvent: (socket: socketio.Socket) => void;
 }
 
 applyMixins(OnlineGame, [withSocketListeners]);

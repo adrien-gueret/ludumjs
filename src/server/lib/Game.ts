@@ -47,6 +47,7 @@ export default class Game extends GameCommon implements withSockeListeners {
 
     // withSocketListeners
     attachSocketEvent: (socket: socketio.Socket) => void;
+    removeSocketEvent: (socket: socketio.Socket) => void;
 }
 
 applyMixins(Game, [withSockeListeners]);

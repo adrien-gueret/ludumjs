@@ -43,6 +43,7 @@ export default abstract class GameFactory implements withSockeListeners {
 
     // withSocketListeners
     attachSocketEvent: (socket: socketio.Socket) => void;
+    removeSocketEvent: (socket: socketio.Socket) => void;
 }
 
 applyMixins(GameFactory, [withSockeListeners]);

@@ -19,6 +19,7 @@ describe('withSocketListeners', () => {
 
                  // withSocketListeners
                  attachSocketEvent: (socket: SocketIO.Socket) => void;
+                 removeSocketEvent: (socket: SocketIO.Socket) => void;
             }
 
             applyMixins(Test, [withSocketListeners]);
@@ -39,6 +40,21 @@ describe('withSocketListeners', () => {
                     expect(socket.on).toHaveBeenCalledWith('onCustomEvent2', expect.any(Function));
                 });
            });
+
+           describe('removeSocketEvent', () => {
+            it('should remove events to given sockets', () => {
+                const socket = {
+                    on: jest.fn(),
+                    removeListener: jest.fn(),
+                };
+
+                instance.attachSocketEvent(socket);
+                instance.removeSocketEvent(socket);
+
+                expect(socket.removeListener).toHaveBeenCalledWith('onCustomEvent', expect.any(Function));
+                expect(socket.removeListener).toHaveBeenCalledWith('onCustomEvent2', expect.any(Function));
+            });
+       });
        });
     });
 
