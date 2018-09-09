@@ -1,5 +1,10 @@
-import PhaseCommon from '../../common/lib/Phase';
+import * as socketio from 'socket.io';
 
-export default abstract class Phase extends PhaseCommon {
-    
+import PhaseCommon from '../../common/lib/Phase';
+import withSockeListeners from '../../common/lib/withSocketListeners';
+
+export default abstract class Phase extends PhaseCommon implements withSockeListeners {
+    // withSocketListeners
+    attachSocketEvent: (socket: socketio.Socket) => void;
+    removeSocketEvent: (socket: socketio.Socket) => void;
 }

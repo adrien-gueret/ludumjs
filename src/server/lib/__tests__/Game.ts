@@ -7,9 +7,11 @@ jest.mock('socket.io', () => jest.fn(() => ({
 
 import * as socketio from 'socket.io';
 import Game from '../Game';
+import Phase from '../Phase';
 
 describe('Game', () => {
     class MyGame extends Game {};
+    class MyPhase extends Phase {};
     let game;
     let socket;
 
@@ -30,6 +32,33 @@ describe('Game', () => {
             const sockets = game.getSockets();
 
             expect(sockets).toEqual([socket]);
+        });
+    });
+
+    describe('goToPhase', () => {
+        let currentPhase;
+        let newPhase;
+
+        beforeEach(() => {
+            currentPhase = new MyPhase(null);
+            newPhase = new MyPhase(null);
+
+            currentPhase.removeSocketEvent = jest.fn();
+            newPhase.attachSocketEvent = jest.fn();
+        });
+
+        it('should remove socket listeners from current phase', () => {
+            game.currentPhase = currentPhase;
+
+            game.goToPhase(newPhase);
+
+            expect(currentPhase.removeSocketEvent).toHaveBeenCalledWith(socket);
+        });
+
+        it('should attach socket listeners to new phase', () => {
+            game.goToPhase(newPhase);
+
+            expect(newPhase.attachSocketEvent).toHaveBeenCalledWith(socket);
         });
     });
 
