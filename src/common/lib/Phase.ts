@@ -6,8 +6,8 @@ export interface PhaseConstructor {
 };
 
 interface Phase {
-    onStart?(...data): void|boolean;
-    onEnd?();
+    onStart?(...data:Array<unknown>): void|boolean|Promise<void|boolean>;
+    onEnd?(): void|Promise<void>;
 }
 
 abstract class Phase {
@@ -21,12 +21,12 @@ abstract class Phase {
         this.onEnd = this.onEnd ? this.onEnd.bind(this) : () => {};
     }
 
-    start(...data:Array<any>): void|boolean {
+    async start(...data:Array<unknown>): Promise<boolean|void> {
         return this.onStart(...data);
     }
 
-    end(): void {
-        this.onEnd();
+    async end(): Promise<void> {
+        return this.onEnd();
     }
 }
 

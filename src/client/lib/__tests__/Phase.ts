@@ -66,50 +66,63 @@ describe('Phase', () => {
         });
 
         describe('start', () => {
-            it('should call onStart', () => {
+            it('should call onStart', async () => {
                 phase.onStart = jest.fn();
 
-                phase.start('foo', 'bar');
+                await phase.start('foo', 'bar');
 
                 expect(phase.onStart).toHaveBeenCalledWith('foo', 'bar');
             });
 
-            it('should listen for click event', () => {
+            it('should listen for click event', async () => {
                 const { domContainer } = phase.game;
                 domContainer.addEventListener = jest.fn();
 
-                phase.start();
+                await phase.start();
 
                 expect(domContainer.addEventListener).toHaveBeenCalledWith('click', phase.onActionHandler);
             });
 
-            it('should NOT listen for click event if onAction is null', () => {
+            it('should NOT listen for click event if onAction is null', async () => {
                 const { domContainer } = phase.game;
                 domContainer.addEventListener = jest.fn();
                 phase.onAction = null;
 
-                phase.start();
+                await phase.start();
 
                 expect(domContainer.addEventListener).not.toHaveBeenCalled();
             });
 
-            it('should add phase className to game dom container', () => {
+            it('should add phase className to game dom container', async () => {
                 const { domContainer } = phase.game;
                 domContainer.classList.add = jest.fn();
 
-                phase.start();
+                await phase.start();
 
                 expect(domContainer.classList.add).toHaveBeenCalledWith('my-phase');
             });
 
-            it('should NOT alter game container if onStart return false', () => {
+            it('should NOT alter game container if onStart return false', async () => {
                 phase.onStart = jest.fn(() => false);
 
                 const { domContainer } = phase.game;
                 domContainer.addEventListener = jest.fn();
                 domContainer.classList.add = jest.fn();
 
-                phase.start();
+                await phase.start();
+
+                expect(domContainer.addEventListener).not.toHaveBeenCalled();
+                expect(domContainer.classList.add).not.toHaveBeenCalled();
+            });
+
+            it('should NOT alter game container if onStart return a promise resolving false', async () => {
+                phase.onStart = jest.fn(async () => false);
+
+                const { domContainer } = phase.game;
+                domContainer.addEventListener = jest.fn();
+                domContainer.classList.add = jest.fn();
+
+                await phase.start();
 
                 expect(domContainer.addEventListener).not.toHaveBeenCalled();
                 expect(domContainer.classList.add).not.toHaveBeenCalled();
@@ -117,38 +130,38 @@ describe('Phase', () => {
         });
 
         describe('end', () => {
-            it('should call onEnd', () => {
+            it('should call onEnd', async () => {
                 phase.onEnd = jest.fn();
 
-                phase.end();
+                await phase.end();
 
                 expect(phase.onEnd).toHaveBeenCalled();
             });
 
-            it('should remove listener for click event', () => {
+            it('should remove listener for click event', async () => {
                 const { domContainer } = phase.game;
                 domContainer.removeEventListener = jest.fn();
 
-                phase.end();
+                await phase.end();
 
                 expect(domContainer.removeEventListener).toHaveBeenCalledWith('click', phase.onActionHandler);
             });
 
-            it('should NOT remove listener for click event is onAction is null', () => {
+            it('should NOT remove listener for click event is onAction is null', async () => {
                 const { domContainer } = phase.game;
                 domContainer.removeEventListener = jest.fn();
                 phase.onAction = null;
 
-                phase.end();
+                await phase.end();
 
                 expect(domContainer.removeEventListener).not.toHaveBeenCalled();
             });
 
-            it('should remove phase className from game dom container', () => {
+            it('should remove phase className from game dom container', async () => {
                 const { domContainer } = phase.game;
                 domContainer.classList.remove = jest.fn();
 
-                phase.end();
+                await phase.end();
 
                 expect(domContainer.classList.remove).toHaveBeenCalledWith('my-phase');
             });

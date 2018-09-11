@@ -64,8 +64,10 @@ abstract class Phase extends PhaseCommon {
             .replace(/^-/, '');
     }
 
-    start(...data:Array<any>): void {
-        if (super.start(...data) === false) {
+    async start(...data:Array<any>): Promise<void> {
+        const result = await super.start(...data);
+
+        if (result === false) {
             return;
         }
 
@@ -76,8 +78,8 @@ abstract class Phase extends PhaseCommon {
         this.game.domContainer.classList.add(this.getClassName());
     }
 
-    end(): void {
-        super.end();
+    async end(): Promise<void> {
+        await super.end();
 
         if (this.onAction) {
             this.game.domContainer.removeEventListener(clickEventName, this.onActionHandler);
