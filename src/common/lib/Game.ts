@@ -1,6 +1,6 @@
 import assert from '../utils/assert';
 import Phase, { PhaseConstructor } from './Phase';
-import withUniqId from './withUniqId';
+import withUniqId from './decorators/withUniqId';
 
 export interface GameConstructor {
     new(...data: Array<any>): Game;

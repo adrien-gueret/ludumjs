@@ -1,6 +1,6 @@
 import socketio from 'socket.io-client';
 
-import withSocketListeners, { socketEvent } from '../../common/lib/withSocketListeners';
+import withSocketListeners, { socketEvent } from '../../common/lib/decorators/withSocketListeners';
 import applyMixins from '../../common/utils/applyMixins';
 
 import Game from './Game';

@@ -1,7 +1,7 @@
 import * as socketio from 'socket.io';
 
 import Game, { GameConstructor } from '../../common/lib/Game';
-import withSockeListeners from '../../common/lib/withSocketListeners';
+import withSockeListeners from '../../common/lib/decorators/withSocketListeners';;
 import applyMixins from '../../common/utils/applyMixins';
 
 export default abstract class GameFactory implements withSockeListeners {

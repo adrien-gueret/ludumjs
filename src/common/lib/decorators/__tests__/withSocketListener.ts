@@ -1,5 +1,5 @@
 import withSocketListeners, { socketCallbackWrapper, socketEvent } from '../withSocketListeners';
-import applyMixins from '../../utils/applyMixins';
+import applyMixins from '../../../utils/applyMixins';
 
 describe('withSocketListeners', () => {
     describe('withSocketListeners class', () => {

@@ -1,5 +1,5 @@
-export { socketEvent } from './lib/withSocketListeners';
-export { default as uniqId } from './lib/uniqId';
+export { socketEvent } from './lib/decorators/withSocketListeners'
+export { default as withUniqId } from './lib/decorators/withUniqId';
 
 export { default as arrays } from './utils/arrays';
 export { default as dices } from './utils/dices';
