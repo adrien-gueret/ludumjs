@@ -4,15 +4,12 @@
         "experimentalDecorators": true,
         "target": "es5",
         "lib": ["es6", "dom"],
-        "removeComments": true,
+        "removeComments": true
     },
-    "include": [
+    "files": [
         "client.ts",
         "server.ts",
-        "src/**/*"
     ],
-    "exclude": [
-        "node_modules",
-        "src/**/__tests__/*"
-    ]
+    "include": ["src/**/*"],
+    "exclude": ["node_modules"]
 }
