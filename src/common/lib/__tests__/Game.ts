@@ -15,7 +15,7 @@ describe('Game', () => {
     describe('constructor', () => {
         it('should correctly init instance', () => {
             const game = new MyGame();
-
+        
             expect(game.phases).toEqual([]);
             expect(game.currentPhase).toBeNull();
         });

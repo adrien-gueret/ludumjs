@@ -1,13 +1,17 @@
 import assert from '../utils/assert';
 import Phase, { PhaseConstructor } from './Phase';
+import withUniqId from './withUniqId';
 
 export interface GameConstructor {
     new(...data: Array<any>): Game;
 };
 
+@withUniqId
 export default abstract class Game {
     readonly phases: Array<Phase>;
     currentPhase: Phase|null;
+
+    uniqId: string;
 
     constructor() {
         this.phases = [];
