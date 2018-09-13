@@ -1,4 +1,4 @@
-export { socketEvent } from './lib/decorators/withSocketListeners'
+export { withSocketListeners, socketEvent } from './lib/decorators/withSocketListeners'
 export { default as withUniqId } from './lib/decorators/withUniqId';
 
 export { default as arrays } from './utils/arrays';

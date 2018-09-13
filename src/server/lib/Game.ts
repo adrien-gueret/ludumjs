@@ -1,12 +1,12 @@
 import * as socketio from 'socket.io';
 
 import GameCommon from '../../common/lib/Game';
-import withSockeListeners from '../../common/lib/decorators/withSocketListeners';
-import applyMixins from '../../common/utils/applyMixins';
+import { withSocketListeners } from '../../common/lib/decorators/withSocketListeners';
 
 import Phase from './Phase';
 
-export default class Game extends GameCommon implements withSockeListeners {
+@withSocketListeners
+export default class Game extends GameCommon {
     private sockets: Array<socketio.Socket> = [];
     private onEndCallbacks: Array<Function>;
 
@@ -64,5 +64,3 @@ export default class Game extends GameCommon implements withSockeListeners {
     attachSocketEvent: (socket: socketio.Socket) => void;
     removeSocketEvent: (socket: socketio.Socket) => void;
 }
-
-applyMixins(Game, [withSockeListeners]);

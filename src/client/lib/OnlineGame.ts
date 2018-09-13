@@ -1,7 +1,6 @@
 import socketio from 'socket.io-client';
 
-import withSocketListeners, { socketEvent } from '../../common/lib/decorators/withSocketListeners';
-import applyMixins from '../../common/utils/applyMixins';
+import { socketEvent, withSocketListeners } from '../../common/lib/decorators/withSocketListeners';
 
 import Game from './Game';
 
@@ -11,7 +10,8 @@ function getRootUrl() {
     return `${protocol}//${hostname}`;
 }
 
-export default abstract class OnlineGame extends Game implements withSocketListeners {
+@withSocketListeners
+export default abstract class OnlineGame extends Game {
     private socket: SocketIO.Socket;
 
     constructor(domContainer: HTMLElement) {
@@ -39,5 +39,3 @@ export default abstract class OnlineGame extends Game implements withSocketListe
     attachSocketEvent: (socket: SocketIO.Socket) => void;
     removeSocketEvent: (socket: socketio.Socket) => void;
 }
-
-applyMixins(OnlineGame, [withSocketListeners]);

@@ -1,16 +1,12 @@
-import withSocketListeners, { socketCallbackWrapper, socketEvent } from '../withSocketListeners';
-import applyMixins from '../../../utils/applyMixins';
+import { socketCallbackWrapper, socketEvent, withSocketListeners } from '../withSocketListeners';
 
 describe('withSocketListeners', () => {
     describe('withSocketListeners class', () => {
        let instance;
 
         beforeEach(() => {
-            class Test implements withSocketListeners {
-                constructor() {
-
-                }
-
+            @withSocketListeners
+            class Test {
                 @socketEvent
                 onCustomEvent() {}
 
@@ -21,8 +17,6 @@ describe('withSocketListeners', () => {
                  attachSocketEvent: (socket: SocketIO.Socket) => void;
                  removeSocketEvent: (socket: SocketIO.Socket) => void;
             }
-
-            applyMixins(Test, [withSocketListeners]);
 
             instance = new Test();
         });

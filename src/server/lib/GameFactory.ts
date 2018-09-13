@@ -1,10 +1,10 @@
 import * as socketio from 'socket.io';
 
 import Game, { GameConstructor } from '../../common/lib/Game';
-import withSockeListeners from '../../common/lib/decorators/withSocketListeners';;
-import applyMixins from '../../common/utils/applyMixins';
+import { withSocketListeners } from '../../common/lib/decorators/withSocketListeners';
 
-export default abstract class GameFactory implements withSockeListeners {
+@withSocketListeners
+export default abstract class GameFactory {
     private GameClass: GameConstructor;
     private io: socketio.Server;
     protected games: Array<Game>;
@@ -45,5 +45,3 @@ export default abstract class GameFactory implements withSockeListeners {
     attachSocketEvent: (socket: socketio.Socket) => void;
     removeSocketEvent: (socket: socketio.Socket) => void;
 }
-
-applyMixins(GameFactory, [withSockeListeners]);
