@@ -43,6 +43,23 @@ describe('GameFactory', () => {
         });
     });
 
+    describe('join', () => {
+        let game;
+
+        beforeEach(() => {
+            game = factory.create(socketio());
+            game.join = jest.fn();
+        });
+
+        it('should make given socket join given game', () => {
+            const newSocket = socketio();
+
+            factory.join(newSocket, game.uniqId);
+
+            expect(game.join).toHaveBeenCalledWith(newSocket);
+        });
+    });
+
     describe('listen', () => {
         beforeEach(() => {
             console.log = jest.fn();

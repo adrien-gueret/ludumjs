@@ -1,7 +1,9 @@
 import * as socketio from 'socket.io';
 
-import Game, { GameConstructor } from '../../common/lib/Game';
+import { GameConstructor } from '../../common/lib/Game';
+import Game from './Game';
 import { withSocketListeners } from '../../common/lib/decorators/withSocketListeners';
+import assert from '../../common/utils/assert';
 
 @withSocketListeners
 export default abstract class GameFactory {
@@ -31,6 +33,14 @@ export default abstract class GameFactory {
         game.onEnd(() => this.deleteGame(game));
 
         return game;
+    }
+
+    join(socket: socketio.Socket, gameUniqId: string) {
+        const game = this.games.filter(game => game.uniqId === gameUniqId)[0];
+
+        assert(!!game, `Game with id #${gameUniqId} not found`);
+
+        game.join(socket);
     }
 
     deleteGame(gameToDelete: Game) {
