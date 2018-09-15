@@ -11,6 +11,7 @@ export default abstract class Game {
     readonly phases: Array<Phase>;
     currentPhase: Phase|null;
 
+    // withUniqId
     uniqId: string;
 
     constructor() {

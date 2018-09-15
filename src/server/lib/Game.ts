@@ -47,7 +47,7 @@ export default class Game extends GameCommon {
     }
 
     getSockets(): Array<socketio.Socket> {
-        return this.players.map(player => player.getSocket());
+        return this.players.map(player => player.socket);
     }
 
     goToPhase(targetPhase: Phase, ...data): void {
@@ -62,8 +62,16 @@ export default class Game extends GameCommon {
 
     join(socket: socketio.Socket) {
         socket.join(this.uniqId);
-        this.players.push(new Player(socket));
+
+        const player = new Player(socket);
+        this.players.push(player);
+
         this.attachSocketEvent(socket);
+
+        socket.emit('ludumjs_gameJoined', {
+            gameUniqId: this.uniqId,
+            playerUniqId: player.uniqId,
+        });
     }
 
     onEnd(callback: Function) {

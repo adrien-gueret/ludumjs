@@ -3,17 +3,12 @@ import { withUniqId } from '../../common';
 
 @withUniqId
 export default class Player {
-    private socket: socketio.Socket;
+    socket: socketio.Socket;
+
+    // withUniqId
+    uniqId: string;
 
     constructor(socket: socketio.Socket) {
-        this.setSocket(socket);
-    }
-
-    setSocket(socket: socketio.Socket) {
         this.socket = socket;
-    }
-
-    getSocket(): socketio.Socket {
-        return this.socket;
     }
 }

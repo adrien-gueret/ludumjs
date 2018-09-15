@@ -13,6 +13,8 @@ function getRootUrl() {
 @withSocketListeners
 export default abstract class OnlineGame extends Game {
     private socket: SocketIO.Socket;
+    serverPlayerUniqId: string;
+    serverGameUniqId: string;
 
     constructor(domContainer: HTMLElement) {
         super(domContainer);
@@ -28,6 +30,12 @@ export default abstract class OnlineGame extends Game {
 
     getSocket(): SocketIO.Socket {
         return this.socket;
+    }
+
+    @socketEvent
+    ludumjs_gameJoined(socket, { gameUniqId, playerUniqId }) {
+        this.serverGameUniqId = gameUniqId;
+        this.serverPlayerUniqId = playerUniqId;
     }
 
     @socketEvent

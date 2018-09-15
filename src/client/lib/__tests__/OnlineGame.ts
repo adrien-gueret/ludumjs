@@ -54,6 +54,19 @@ describe('OnlineGame', () => {
         });
     });
 
+    describe('ludumjs_gameJoined', () => {
+        it('should game and player uniqIds from server', () => {
+            game.ludumjs_gameJoined(null, {
+                gameUniqId: 123,
+                playerUniqId: 456,
+
+            });
+
+            expect(game.serverGameUniqId).toBe(123);
+            expect(game.serverPlayerUniqId).toBe(456);
+        });
+    });
+
     describe('ludumjs_switchPhase', () => {
         it('should go to given phase', () => {
             spyOn(game, 'goToPhaseById');
