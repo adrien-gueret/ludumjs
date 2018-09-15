@@ -1,4 +1,5 @@
 jest.mock('socket.io', () => jest.fn(() => ({
+    join: jest.fn(),
     on: jest.fn(),
     disconnect: jest.fn(),
     removeAllListeners: jest.fn(),
@@ -26,7 +27,7 @@ describe('GameFactory', () => {
 
     describe('create', () => {
         it('should create an instance of this factory class', () => {
-            const instance = factory.create('foo', 'bar');
+            const instance = factory.create(socketio());
             
             expect(instance).toBeInstanceOf(MyGame);
         });

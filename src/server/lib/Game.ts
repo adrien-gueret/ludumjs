@@ -4,11 +4,14 @@ import GameCommon from '../../common/lib/Game';
 import { withSocketListeners } from '../../common/lib/decorators/withSocketListeners';
 
 import Phase from './Phase';
+import Player from './Player';
 
 @withSocketListeners
 export default class Game extends GameCommon {
-    private sockets: Array<socketio.Socket> = [];
+    private io: socketio.Server;
     private onEndCallbacks: Array<Function>;
+
+    protected players: Array<Player> = [];
 
     readonly phases: Array<Phase>;
     currentPhase: Phase|null;
@@ -23,22 +26,43 @@ export default class Game extends GameCommon {
         }
     }
 
+    setIo(io:socketio.Server) {
+        this.io = io;
+    }
+
+    emitToAllPlayers(eventName, eventData) {
+        this.io.to(this.uniqId).emit(eventName, eventData);
+    }
+
+    emitSwitchPhase(phaseName, ...data) {
+        this.emitToAllPlayers('ludumjs_switchPhase', { phaseName, data });
+    }
+
+    forEachSocket(callback: (s: socketio.Socket) => unknown) {
+        this.getSockets().forEach(callback);
+    }
+
+    getPlayers(): Array<Player> {
+        return this.players;
+    }
+
     getSockets(): Array<socketio.Socket> {
-        return this.sockets;
+        return this.players.map(player => player.getSocket());
     }
 
     goToPhase(targetPhase: Phase, ...data): void {
         if (this.currentPhase) {
-            this.sockets.forEach(socket => this.currentPhase.removeSocketEvent(socket));
+            this.forEachSocket(socket => this.currentPhase.removeSocketEvent(socket));
         }
 
-        this.sockets.forEach(socket => targetPhase.attachSocketEvent(socket));
+        this.forEachSocket(socket => targetPhase.attachSocketEvent(socket));
 
         super.goToPhase(targetPhase, ...data);
     }
 
     join(socket: socketio.Socket) {
-        this.sockets.push(socket);
+        socket.join(this.uniqId);
+        this.players.push(new Player(socket));
         this.attachSocketEvent(socket);
     }
 
@@ -49,15 +73,11 @@ export default class Game extends GameCommon {
     end() {
         this.onEndCallbacks.forEach(callback => callback());
 
-        this.sockets.forEach(socket => {
+        this.forEachSocket(socket => {
             socket.removeAllListeners();
             socket.disconnect(true);
         });
-        this.sockets = [];
-    }
-
-    emitSwitchPhase(phaseName, ...data) {
-        this.sockets.forEach(socket => socket.emit('ludumjs_switchPhase', { phaseName, data }));
+        this.players = [];
     }
 
     // withSocketListeners

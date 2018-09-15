@@ -1,6 +1,7 @@
 jest.mock('socket.io', () => jest.fn(() => ({
     emit: jest.fn(),
     on: jest.fn(),
+    join: jest.fn(),
     disconnect: jest.fn(),
     removeAllListeners: jest.fn(),
 })));
@@ -14,16 +15,34 @@ describe('Game', () => {
     class MyPhase extends Phase {};
     let game;
     let socket;
+    let ioServer;
+    let emitToAllSocket;
 
     beforeEach(() => {
+        emitToAllSocket = jest.fn();
+
+        ioServer = {
+            to: jest.fn(() => ({
+                emit: emitToAllSocket,
+            })),
+        };
         socket = socketio();
         game = new MyGame(socket);
+        game.setIo(ioServer);
     });
 
     describe('constructor', () => {
         it('should correctly init instance', () => {
             expect((game as any).onEndCallbacks).toEqual([]);
-            expect((game as any).sockets).toEqual([socket]);
+            expect((game as any).players.length).toBe(1);
+        });
+    });
+
+    describe('getPlayers', () => {
+        it('should return instance players', () => {
+            const players = game.getPlayers();
+
+            expect(players).toBe((game as any).players);
         });
     });
 
@@ -105,20 +124,20 @@ describe('Game', () => {
             expect(socket.disconnect).toHaveBeenCalledWith(true);
         });
 
-        it('should reset list of sockets', () => {
-            expect((game as any).sockets.length).toBe(1);
+        it('should reset list of players', () => {
+            expect((game as any).players.length).toBe(1);
 
             game.end();
 
-            expect((game as any).sockets.length).toBe(0);
+            expect((game as any).players.length).toBe(0);
         });
     });
 
     describe('emitSwitchPhase', () => {
-        it('should emit switchPhase event to each attached sockets', () => {
+        it('should emit switchPhase event to all sockets', () => {
             game.emitSwitchPhase('TestPhase', 'foo', 'bar');
 
-            expect(socket.emit).toHaveBeenCalledWith(
+            expect(emitToAllSocket).toHaveBeenCalledWith(
                 'ludumjs_switchPhase',
                 {
                     phaseName: 'TestPhase',

@@ -26,6 +26,7 @@ export default abstract class GameFactory {
     create(...data:Array<any>): Game {
         const game = new (Array.bind.apply(this.GameClass, [null].concat(data)));
         this.games.push(game);
+        game.setIo(this.io);
 
         game.onEnd(() => this.deleteGame(game));
 
