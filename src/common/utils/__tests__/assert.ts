@@ -15,9 +15,5 @@ describe('utils/assert', () => {
         it('should throw specific message', () => {
             expect(() => assert(false, 'boom')).toThrow('[LudumJS] boom');
         });
-    
-        it('should throw specific Error class', () => {
-            expect(() => assert(false, 'boom', ReferenceError)).toThrow(ReferenceError);
-        });
     });
 });

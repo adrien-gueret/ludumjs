@@ -2,6 +2,7 @@
     "compilerOptions": {
         "allowJs": false,
         "experimentalDecorators": true,
+        "downlevelIteration": true,
         "target": "es5",
         "lib": ["es6", "dom"],
         "removeComments": true
@@ -11,5 +12,5 @@
         "server.ts",
     ],
     "include": ["src/**/*"],
-    "exclude": ["node_modules"]
+    "exclude": ["node_modules", "**/__tests__/*"]
 }
