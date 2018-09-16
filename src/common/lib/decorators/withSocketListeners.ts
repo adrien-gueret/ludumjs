@@ -14,10 +14,19 @@ export function withSocketListeners(target) {
             if (!thisConstructor.hasOwnProperty('socketHandlers')) {
                 thisConstructor.socketHandlers = {};
             }
-        
+    
+            let lastEventHandlers = null;
+
             while (socketHandler) {
-                for (let socketEvent in socketHandler.socketEvents) {
-                    const bindedCallback = socketHandler.socketEvents[socketEvent].bind(this);
+                if (socketHandler.socketEvents === lastEventHandlers) {
+                    socketHandler = Object.getPrototypeOf(socketHandler);
+                    continue;
+                }
+
+                lastEventHandlers = socketHandler.socketEvents;
+
+                for (let socketEvent in lastEventHandlers) {
+                    const bindedCallback = lastEventHandlers[socketEvent].bind(this);
         
                     const handler = socketCallbackWrapper(bindedCallback, socket);
         
