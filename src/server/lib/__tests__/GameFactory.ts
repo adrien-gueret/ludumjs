@@ -1,5 +1,7 @@
 import Socket from '../../../common/__mocks__/Socket.mock';
 
+import { GameAlreadyFullError, GameNotFoundError } from '../../errors'
+
 const mockIoSocket = new Socket();
 
 jest.mock('socket.io', () => jest.fn(() => ({
@@ -72,6 +74,20 @@ describe('GameFactory', () => {
             factory.join(newSocket, game.uniqId);
 
             expect(game.emitToAllPlayers).toHaveBeenCalledWith('ludumjs_readyToPlay', expect.any(Array));
+        });
+
+        it('should throw error if game is not found', () => {
+            const newSocket = new Socket();
+
+            expect(() => factory.join(newSocket, '0000')).toThrowError(GameNotFoundError);
+        });
+
+        it('should throw error if game has already max players', () => {
+            const newSocket = new Socket();
+
+            MyGame.MAX_PLAYERS = 1;
+
+            expect(() => factory.join(newSocket, game.uniqId)).toThrowError(GameAlreadyFullError);
         });
     });
 

@@ -1,5 +1,5 @@
-export default function(condition: boolean, errorMessage: string = 'Unknwon error'): void {
+export default function(condition: boolean, errorMessage: string = 'Unknwon error', Exception: { new (string?): Error } = Error): void {
     if (!condition) {
-        throw new Error(`[LudumJS] ${errorMessage}`);
+        throw new Exception(`[LudumJS] ${errorMessage}`);
     }
 }

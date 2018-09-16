@@ -1,8 +1,9 @@
 import * as socketio from 'socket.io';
 
-import Game, { GameConstructor } from './Game';
 import { withSocketListeners } from '../../common/lib/decorators/withSocketListeners';
 import assert from '../../common/utils/assert';
+import { GameAlreadyFullError, GameNotFoundError } from '../errors';
+import Game, { GameConstructor } from './Game';
 
 @withSocketListeners
 export default abstract class GameFactory {
@@ -37,11 +38,11 @@ export default abstract class GameFactory {
     join(socket: socketio.Socket, gameUniqId: string) {
         const game = this.games.filter(game => game.uniqId === gameUniqId)[0];
 
-        assert(!!game, `Game #${gameUniqId} not found`);
+        assert(!!game, `Game #${gameUniqId} not found`, GameNotFoundError);
 
         const { MAX_PLAYERS } = this.GameClass;
 
-        assert(game.getPlayers().length < MAX_PLAYERS, `Game #${gameUniqId} can't get new players.`);
+        assert(game.getPlayers().length < MAX_PLAYERS, `Game #${gameUniqId} can't get new players.`, GameAlreadyFullError);
 
         game.join(socket);
 
