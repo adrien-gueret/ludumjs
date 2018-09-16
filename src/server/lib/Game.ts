@@ -1,13 +1,20 @@
 import * as socketio from 'socket.io';
 
-import GameCommon from '../../common/lib/Game';
+import GameCommon, { GameConstructor as GameCommonConstructor } from '../../common/lib/Game';
 import { withSocketListeners } from '../../common/lib/decorators/withSocketListeners';
 
 import Phase from './Phase';
 import Player from './Player';
 
+export interface GameConstructor extends GameCommonConstructor {
+    new(...data: Array<any>): Game;
+    MAX_PLAYERS: number;
+};
+
 @withSocketListeners
 export default class Game extends GameCommon {
+    static MAX_PLAYERS: number = 2;
+
     private io: socketio.Server;
     private onEndCallbacks: Array<Function>;
 
@@ -30,11 +37,11 @@ export default class Game extends GameCommon {
         this.io = io;
     }
 
-    emitToAllPlayers(eventName, eventData) {
+    emitToAllPlayers(eventName: string, eventData: unknown = {}) {
         this.io.to(this.uniqId).emit(eventName, eventData);
     }
 
-    emitSwitchPhase(phaseName, ...data) {
+    emitSwitchPhase(phaseName: string, ...data) {
         this.emitToAllPlayers('ludumjs_switchPhase', { phaseName, data });
     }
 

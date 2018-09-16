@@ -3,6 +3,9 @@ jest.mock('socket.io-client', () => ({
 }));
 
 import socketio from 'socket.io-client';
+
+import Socket from '../../../common/__mocks__/Socket.mock';
+
 import OnlineGame from '../OnlineGame';
 
 describe('OnlineGame', () => {
@@ -16,9 +19,7 @@ describe('OnlineGame', () => {
         domContainer = document.createElement('div');
         game = new MyGame(domContainer);
 
-        mockedSocket = {
-            on: jest.fn(),
-        },
+        mockedSocket = new Socket();
 
         socketio.mockReset();
         socketio.mockReturnValue(mockedSocket);

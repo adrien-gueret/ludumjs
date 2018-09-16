@@ -1,9 +1,10 @@
+import Socket from '../../../common/__mocks__/Socket.mock';
+
+const mockIoSocket = new Socket();
+
 jest.mock('socket.io', () => jest.fn(() => ({
-    join: jest.fn(),
-    emit: jest.fn(),
     on: jest.fn(),
-    disconnect: jest.fn(),
-    removeAllListeners: jest.fn(),
+    to: jest.fn(() => mockIoSocket),
 })));
 
 import * as socketio from 'socket.io';
@@ -16,6 +17,7 @@ describe('GameFactory', () => {
     let factory;
 
     beforeEach(() => {
+        MyGame.MAX_PLAYERS = 10;
         factory = new MyGameFactory(MyGame);
     });
 
@@ -28,14 +30,14 @@ describe('GameFactory', () => {
 
     describe('create', () => {
         it('should create an instance of this factory class', () => {
-            const instance = factory.create(socketio());
+            const instance = factory.create(new Socket());
             
             expect(instance).toBeInstanceOf(MyGame);
         });
 
         it('should attach "onEnd" listener to created game', () => {
             spyOn(factory, 'deleteGame');
-            const instance = factory.create(socketio(), 'bar');
+            const instance = factory.create(new Socket(), 'bar');
         
             instance.end();
             
@@ -47,16 +49,29 @@ describe('GameFactory', () => {
         let game;
 
         beforeEach(() => {
-            game = factory.create(socketio());
-            game.join = jest.fn();
+            factory.io = socketio();
+
+            game = factory.create(new Socket());
+            jest.spyOn(game, 'join');
         });
 
         it('should make given socket join given game', () => {
-            const newSocket = socketio();
+            const newSocket = new Socket();
 
             factory.join(newSocket, game.uniqId);
 
             expect(game.join).toHaveBeenCalledWith(newSocket);
+        });
+
+        it('should emit "ready to play" event when max players number is reached', () => {
+            jest.spyOn(game, 'emitToAllPlayers');
+
+            MyGame.MAX_PLAYERS = game.getPlayers().length + 1;
+
+            const newSocket = new Socket();
+            factory.join(newSocket, game.uniqId);
+
+            expect(game.emitToAllPlayers).toHaveBeenCalledWith('ludumjs_readyToPlay', expect.any(Array));
         });
     });
 

@@ -1,12 +1,7 @@
-jest.mock('socket.io', () => jest.fn(() => ({
-    emit: jest.fn(),
-    on: jest.fn(),
-    join: jest.fn(),
-    disconnect: jest.fn(),
-    removeAllListeners: jest.fn(),
-})));
+jest.mock('socket.io');
 
-import * as socketio from 'socket.io';
+import Socket from '../../../common/__mocks__/Socket.mock';
+
 import Game from '../Game';
 import Phase from '../Phase';
 
@@ -26,7 +21,7 @@ describe('Game', () => {
                 emit: emitToAllSocket,
             })),
         };
-        socket = socketio();
+        socket = new Socket();
         game = new MyGame(socket);
         game.setIo(ioServer);
     });
@@ -83,7 +78,7 @@ describe('Game', () => {
 
     describe('join', () => {
         it('should append given socket to list of sockets', () => {
-            const socket2 = socketio();
+            const socket2 = new Socket();
 
             game.join(socket2);
 
@@ -130,6 +125,21 @@ describe('Game', () => {
             game.end();
 
             expect((game as any).players.length).toBe(0);
+        });
+    });
+
+    describe('emitToAllPlayers', () => {
+        it('should emit given event to all sockets', () => {
+            game.emitToAllPlayers('MyEvent');
+
+            expect(emitToAllSocket).toHaveBeenCalledWith('MyEvent', {});
+        });
+
+        it('should emit given event with given data to all sockets', () => {
+            const data = { foo: 'bar' };
+            game.emitToAllPlayers('MyEvent', data);
+
+            expect(emitToAllSocket).toHaveBeenCalledWith('MyEvent', data);
         });
     });
 

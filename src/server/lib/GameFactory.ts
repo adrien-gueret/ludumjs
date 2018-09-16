@@ -1,7 +1,6 @@
 import * as socketio from 'socket.io';
 
-import { GameConstructor } from '../../common/lib/Game';
-import Game from './Game';
+import Game, { GameConstructor } from './Game';
 import { withSocketListeners } from '../../common/lib/decorators/withSocketListeners';
 import assert from '../../common/utils/assert';
 
@@ -38,9 +37,17 @@ export default abstract class GameFactory {
     join(socket: socketio.Socket, gameUniqId: string) {
         const game = this.games.filter(game => game.uniqId === gameUniqId)[0];
 
-        assert(!!game, `Game with id #${gameUniqId} not found`);
+        assert(!!game, `Game #${gameUniqId} not found`);
+
+        const { MAX_PLAYERS } = this.GameClass;
+
+        assert(game.getPlayers().length < MAX_PLAYERS, `Game #${gameUniqId} can't get new players.`);
 
         game.join(socket);
+
+        if (game.getPlayers().length === MAX_PLAYERS) {
+            game.emitToAllPlayers('ludumjs_readyToPlay', game.getPlayers().map(player => player.uniqId));
+        }
     }
 
     deleteGame(gameToDelete: Game) {
