@@ -3,6 +3,8 @@ import socketio from 'socket.io-client';
 import { socketEvent, withSocketListeners } from '../../common/lib/decorators/withSocketListeners';
 
 import Game from './Game';
+import Phase from './Phase';
+import OnlinePhase from './OnlinePhase';
 
 function getRootUrl() {
     const { protocol, hostname } = document.location;
@@ -15,6 +17,8 @@ export default abstract class OnlineGame extends Game {
     private socket: SocketIO.Socket;
     serverPlayerUniqId: string;
     serverGameUniqId: string;
+
+    readonly phases: Array<Phase|OnlinePhase>;
 
     constructor(domContainer: HTMLElement) {
         super(domContainer);
@@ -30,6 +34,18 @@ export default abstract class OnlineGame extends Game {
 
     getSocket(): SocketIO.Socket {
         return this.socket;
+    }
+
+    goToPhase(targetPhase: Phase|OnlinePhase, ...data): void {
+        if (this.currentPhase && this.currentPhase instanceof OnlinePhase) {
+            this.currentPhase.removeSocketEvent(this.socket);
+        }
+
+        if (targetPhase instanceof OnlinePhase) {
+            targetPhase.attachSocketEvent(this.socket)
+        }
+
+        super.goToPhase(targetPhase, ...data);
     }
 
     @socketEvent

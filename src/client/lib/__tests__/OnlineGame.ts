@@ -7,9 +7,17 @@ import socketio from 'socket.io-client';
 import Socket from '../../../common/__mocks__/Socket.mock';
 
 import OnlineGame from '../OnlineGame';
+import OnlinePhase from '../OnlinePhase';
+import Phase from '../Phase';
 
 describe('OnlineGame', () => {
     class MyGame extends OnlineGame {};
+    class MyPhase extends Phase {
+        static id = 'MyPhase';
+    }
+    class MyOnlinePhase extends OnlinePhase {
+        static id = 'MyOnlinePhase';
+    }
 
     let domContainer;
     let game;
@@ -18,6 +26,7 @@ describe('OnlineGame', () => {
     beforeEach(() => {
         domContainer = document.createElement('div');
         game = new MyGame(domContainer);
+        game.registerPhases([MyPhase, MyOnlinePhase]);
 
         mockedSocket = new Socket();
 
@@ -52,6 +61,49 @@ describe('OnlineGame', () => {
         it('should return instance socket', () => {
             game.connect(1337);
             expect(game.getSocket()).toBe(mockedSocket);
+        });
+    });
+
+    describe('goToPhase', () => {
+        let normalPhase;
+        let onlinePhase;
+
+        beforeEach(() => {
+            normalPhase = new MyPhase(game);
+            onlinePhase = new MyOnlinePhase(game);
+
+            normalPhase.attachSocketEvent = jest.fn();
+            onlinePhase.attachSocketEvent = jest.fn();
+            normalPhase.removeSocketEvent = jest.fn();
+            onlinePhase.removeSocketEvent = jest.fn();
+        });
+
+        it('should remove socket event from current online phase', () => {
+            game.currentPhase = onlinePhase;
+
+            game.goToPhase(normalPhase);
+
+            expect(onlinePhase.removeSocketEvent).toHaveBeenCalledWith(game.socket);
+        });
+
+        it('should NOT remove socket event from current normal phase', () => {
+            game.currentPhase = normalPhase;
+
+            game.goToPhase(onlinePhase);
+
+            expect(normalPhase.removeSocketEvent).not.toHaveBeenCalled();
+        });
+
+        it('should add socket event on new online phase', () => {
+            game.goToPhase(onlinePhase);
+
+            expect(onlinePhase.attachSocketEvent).toHaveBeenCalledWith(game.socket);
+        });
+
+        it('should NOT add socket event on new normal phase', () => {
+            game.goToPhase(normalPhase);
+
+            expect(normalPhase.attachSocketEvent).not.toHaveBeenCalled();
         });
     });
 
