@@ -11,14 +11,14 @@ describe('Game', () => {
     let game;
     let socket;
     let ioServer;
-    let emitToAllSocket;
+    let emitToAllSockets;
 
     beforeEach(() => {
-        emitToAllSocket = jest.fn();
+        emitToAllSockets = jest.fn();
 
         ioServer = {
             to: jest.fn(() => ({
-                emit: emitToAllSocket,
+                emit: emitToAllSockets,
             })),
         };
         socket = new Socket();
@@ -46,6 +46,24 @@ describe('Game', () => {
             const sockets = game.getSockets();
 
             expect(sockets).toEqual([socket]);
+        });
+    });
+
+    describe('getPlayerFromSocket', () => {
+        it('should return player corresponding to given socket', () => {
+            const socket1 = new Socket();
+            socket1.id = 'a';
+
+            const socket2 = new Socket();
+            socket.id = 'b';
+
+            const player1 = { socket: socket1 };
+            const player2 = { socket: socket2 };
+
+            game.players = [player1, player2];
+
+            expect(game.getPlayerFromSocket(socket1)).toBe(player1);
+            expect(game.getPlayerFromSocket(socket2)).toBe(player2);
         });
     });
 
@@ -144,14 +162,39 @@ describe('Game', () => {
         it('should emit given event to all sockets', () => {
             game.emitToAllPlayers('MyEvent');
 
-            expect(emitToAllSocket).toHaveBeenCalledWith('MyEvent', {});
+            expect(emitToAllSockets).toHaveBeenCalledWith('MyEvent', {});
         });
 
         it('should emit given event with given data to all sockets', () => {
             const data = { foo: 'bar' };
             game.emitToAllPlayers('MyEvent', data);
 
-            expect(emitToAllSocket).toHaveBeenCalledWith('MyEvent', data);
+            expect(emitToAllSockets).toHaveBeenCalledWith('MyEvent', data);
+        });
+    });
+
+    describe('emitToAllPlayersExceptOne', () => {
+        let emit;
+        let player;
+
+        beforeEach(() => {
+            emit = jest.fn();
+            socket.broadcast.to.mockReturnValueOnce({ emit });
+            player = { socket };
+        });
+
+        it('should broadcast event from given player socket', () => {
+            game.emitToAllPlayersExceptOne(player, 'MyEvent');
+
+            expect(emit).toHaveBeenCalledWith('MyEvent', {});
+        });
+
+        it('should emit given event with given data', () => {
+            const data = { foo: 'bar' };
+
+            game.emitToAllPlayersExceptOne(player, 'MyEvent', data);
+
+            expect(emit).toHaveBeenCalledWith('MyEvent', data);
         });
     });
 
@@ -159,7 +202,7 @@ describe('Game', () => {
         it('should emit switchPhase event to all sockets', () => {
             game.emitSwitchPhase('TestPhase', 'foo', 'bar');
 
-            expect(emitToAllSocket).toHaveBeenCalledWith(
+            expect(emitToAllSockets).toHaveBeenCalledWith(
                 'ludumjs_switchPhase',
                 {
                     phaseName: 'TestPhase',

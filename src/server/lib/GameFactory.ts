@@ -40,13 +40,11 @@ export default abstract class GameFactory {
 
         assert(!!game, `Game #${gameUniqId} not found`, GameNotFoundError);
 
-        const { MAX_PLAYERS } = this.GameClass;
-
-        assert(game.getPlayers().length < MAX_PLAYERS, `Game #${gameUniqId} can't get new players.`, GameAlreadyFullError);
+        assert(!game.isFull(), `Game #${gameUniqId} can't get new players.`, GameAlreadyFullError);
 
         game.join(socket);
 
-        if (game.getPlayers().length === MAX_PLAYERS) {
+        if (game.isFull()) {
             game.emitToAllPlayers('ludumjs_readyToPlay', game.getPlayers().map(player => player.uniqId));
         }
 

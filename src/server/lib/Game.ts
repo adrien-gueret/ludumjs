@@ -41,12 +41,20 @@ export default class Game extends GameCommon {
         this.io.to(this.uniqId).emit(eventName, eventData);
     }
 
+    emitToAllPlayersExceptOne(sender: Player, eventName: string, eventData: unknown = {}) {
+        sender.socket.broadcast.to(this.uniqId).emit(eventName, eventData);
+    }
+
     emitSwitchPhase(phaseName: string, ...data) {
         this.emitToAllPlayers('ludumjs_switchPhase', { phaseName, data });
     }
 
     forEachSocket(callback: (s: socketio.Socket) => unknown) {
         this.getSockets().forEach(callback);
+    }
+
+    getPlayerFromSocket(socket: socketio.Socket): Player {
+        return this.players.filter(player => player.socket.id === socket.id)[0];
     }
 
     getPlayers(): Array<Player> {
@@ -65,6 +73,10 @@ export default class Game extends GameCommon {
         this.forEachSocket(socket => targetPhase.attachSocketEvent(socket));
 
         super.goToPhase(targetPhase, ...data);
+    }
+
+    isFull(): boolean {
+        return this.players.length >= (<GameConstructor> this.constructor).MAX_PLAYERS;
     }
 
     join(socket: socketio.Socket) {
