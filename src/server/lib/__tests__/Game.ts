@@ -86,6 +86,18 @@ describe('Game', () => {
 
             expect(sockets).toEqual([socket, socket2]);
         });
+
+        it('should attach socket events of current phase if it exists', () => {
+            const currentPhase = new MyPhase(null);
+            const socket2 = new Socket();
+
+            currentPhase.attachSocketEvent = jest.fn();
+
+            game.currentPhase = currentPhase;
+            game.join(socket2);
+
+            expect(currentPhase.attachSocketEvent).toHaveBeenCalledWith(socket2);
+        });
     });
 
     describe('onEnd', () => {

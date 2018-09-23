@@ -35,7 +35,7 @@ export default abstract class GameFactory {
         return game;
     }
 
-    join(socket: socketio.Socket, gameUniqId: string) {
+    join(socket: socketio.Socket, gameUniqId: string): Game {
         const game = this.games.filter(game => game.uniqId === gameUniqId)[0];
 
         assert(!!game, `Game #${gameUniqId} not found`, GameNotFoundError);
@@ -49,6 +49,8 @@ export default abstract class GameFactory {
         if (game.getPlayers().length === MAX_PLAYERS) {
             game.emitToAllPlayers('ludumjs_readyToPlay', game.getPlayers().map(player => player.uniqId));
         }
+
+        return game;
     }
 
     deleteGame(gameToDelete: Game) {

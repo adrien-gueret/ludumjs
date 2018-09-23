@@ -75,6 +75,10 @@ export default class Game extends GameCommon {
 
         this.attachSocketEvent(socket);
 
+        if (this.currentPhase) {
+            this.currentPhase.attachSocketEvent(socket);
+        }
+
         socket.emit('ludumjs_gameJoined', {
             gameUniqId: this.uniqId,
             playerUniqId: player.uniqId,
