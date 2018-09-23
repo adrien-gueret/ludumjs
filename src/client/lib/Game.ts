@@ -20,7 +20,7 @@ export default class Game extends GameCommon {
         return this.dialogs.filter(dialog => dialog.dataset.dialog === dialogId)[0] || null;
     }
 
-    showDialog(dialogId: string, delay = 0): HTMLElement|null {
+    showDialog(dialogId: string, delay = 200): HTMLElement|null {
         const dialog = this.getDialog(dialogId);
         assert(!!dialog, `Try to show dialog "${dialogId}" which is not found.`);
 
@@ -37,7 +37,7 @@ export default class Game extends GameCommon {
         return dialog;
     }
 
-    hideDialog(dialogId: string, delay = 0): HTMLElement|null {
+    hideDialog(dialogId: string, delay = 200): HTMLElement|null {
         const dialog = this.getDialog(dialogId);
         assert(!!dialog, `Try to hide dialog "${dialogId}" which is not found.`);
         assert(dialog.classList.contains('ludumjs-dialog--visible'), `Try to hide dialog "${dialogId}" but it seems already hidden.`);
