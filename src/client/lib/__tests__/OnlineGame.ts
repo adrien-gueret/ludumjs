@@ -40,6 +40,16 @@ describe('OnlineGame', () => {
         });
     });
 
+    describe('addPlayer', () => {
+        it('should add given id to list of player ids', () => {
+            expect(game.otherPlayerUniqIds).toEqual([]);
+
+            game.addPlayer('foo:bar');
+
+            expect(game.otherPlayerUniqIds).toEqual(['foo:bar']);
+        });
+    });
+
     describe('connect', () => {
         it('should connect to socket.io server', () => {
             game.connect(1337, 'https://my-server');
@@ -117,6 +127,16 @@ describe('OnlineGame', () => {
 
             expect(game.serverGameUniqId).toBe(123);
             expect(game.serverPlayerUniqId).toBe(456);
+        });
+    });
+
+    describe('ludumjs_newPlayerJoined', () => {
+        it('should call addPlayer method', () => {
+            game.addPlayer = jest.fn();
+
+            game.ludumjs_newPlayerJoined(null, 'foo:bar');
+
+            expect(game.addPlayer).toHaveBeenCalledWith('foo:bar');
         });
     });
 

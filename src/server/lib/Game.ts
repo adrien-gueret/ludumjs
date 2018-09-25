@@ -95,6 +95,8 @@ export default class Game extends GameCommon {
             gameUniqId: this.uniqId,
             playerUniqId: player.uniqId,
         });
+
+        this.emitToAllPlayersExceptOne(player, 'ludumjs_newPlayerJoined', player.uniqId);
     }
 
     onEnd(callback: Function) {
