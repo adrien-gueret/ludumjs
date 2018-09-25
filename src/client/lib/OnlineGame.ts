@@ -55,18 +55,23 @@ export default abstract class OnlineGame extends Game {
     }
 
     @socketEvent
-    ludumjs_gameJoined(socket, { gameUniqId, playerUniqId }) {
+    ludumjs_gameJoined(socket, { gameUniqId, playerUniqId } : { gameUniqId: string, playerUniqId: string }) {
         this.serverGameUniqId = gameUniqId;
         this.serverPlayerUniqId = playerUniqId;
     }
 
     @socketEvent
-    ludumjs_newPlayerJoined(socket, playerUniqId) {
+    ludumjs_newPlayerJoined(socket, playerUniqId: string) {
         this.addPlayer(playerUniqId);
     }
 
     @socketEvent
-    ludumjs_switchPhase(socket, { phaseName, data }) {
+    ludumjs_readyToPlay(socket, allPlayerUniqIds: Array<string>) {
+        this.otherPlayerUniqIds = allPlayerUniqIds.filter(id => id != this.serverPlayerUniqId);
+    }
+
+    @socketEvent
+    ludumjs_switchPhase(socket, { phaseName, data } : { phaseName: string, data: any }) {
         this.goToPhaseById(phaseName, ...data);
     }
 

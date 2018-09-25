@@ -140,6 +140,16 @@ describe('OnlineGame', () => {
         });
     });
 
+    describe('ludumjs_readyToPlay', () => {
+        it('should set list of other player uniq ids', () => {
+            game.serverPlayerUniqId = 'foo';
+           
+            game.ludumjs_readyToPlay(null, ['foo', 'bar', '123']);
+
+            expect(game.otherPlayerUniqIds).toEqual(['bar', '123']);
+        });
+    });
+
     describe('ludumjs_switchPhase', () => {
         it('should go to given phase', () => {
             spyOn(game, 'goToPhaseById');
