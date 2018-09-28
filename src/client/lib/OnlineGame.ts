@@ -1,6 +1,7 @@
 import socketio from 'socket.io-client';
 
 import { socketEvent, withSocketListeners } from '../../common/lib/decorators/withSocketListeners';
+import { PlayerData, PlayerDataDictionnary } from '../../common/lib/Player';
 
 import Game from './Game';
 import Phase from './Phase';
@@ -16,9 +17,10 @@ function getRootUrl() {
 export default abstract class OnlineGame extends Game {
     private socket: SocketIO.Socket;
     
-    otherPlayerUniqIds: Array<string> = [];
-    serverPlayerUniqId: string;
-    serverGameUniqId: string;
+    players: PlayerDataDictionnary = {};
+
+    playerUniqId: string;
+    gameUniqId: string;
 
     readonly phases: Array<Phase|OnlinePhase>;
 
@@ -27,8 +29,8 @@ export default abstract class OnlineGame extends Game {
         this.socket = null;
     }
 
-    addPlayer(playerUniqId: string) {
-        this.otherPlayerUniqIds.push(playerUniqId);
+    addPlayer(player: PlayerData) {
+        this.players[player.uniqId] = player;
     }
 
     connect(port: Number = null, serverUrl = getRootUrl()): SocketIO.Socket {
@@ -56,18 +58,21 @@ export default abstract class OnlineGame extends Game {
 
     @socketEvent
     ludumjs_gameJoined(socket, { gameUniqId, playerUniqId } : { gameUniqId: string, playerUniqId: string }) {
-        this.serverGameUniqId = gameUniqId;
-        this.serverPlayerUniqId = playerUniqId;
+        this.gameUniqId = gameUniqId;
+        this.playerUniqId = playerUniqId;
     }
 
     @socketEvent
-    ludumjs_newPlayerJoined(socket, playerUniqId: string) {
-        this.addPlayer(playerUniqId);
+    ludumjs_newPlayerJoined(socket, player: PlayerData) {
+        this.addPlayer(player);
     }
 
     @socketEvent
-    ludumjs_readyToPlay(socket, allPlayerUniqIds: Array<string>) {
-        this.otherPlayerUniqIds = allPlayerUniqIds.filter(id => id != this.serverPlayerUniqId);
+    ludumjs_readyToPlay(socket, allPlayers: Array<PlayerData>) {
+        this.players = allPlayers.reduce((combinedPlayers: PlayerDataDictionnary, player: PlayerData) => ({
+            ...combinedPlayers,
+            [player.uniqId]: player,
+        }), {});
     }
 
     @socketEvent

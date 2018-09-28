@@ -62,7 +62,15 @@ describe('GameFactory', () => {
 
             factory.join(newSocket, game.uniqId);
 
-            expect(game.join).toHaveBeenCalledWith(newSocket);
+            expect(game.join).toHaveBeenCalledWith(newSocket, {});
+        });
+
+        it('should make given socket join given game with given player data', () => {
+            const newSocket = new Socket();
+
+            factory.join(newSocket, game.uniqId, { name: 'Foo' });
+
+            expect(game.join).toHaveBeenCalledWith(newSocket, { name: 'Foo' });
         });
 
         it('should emit "ready to play" event when max players number is reached', () => {

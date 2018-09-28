@@ -41,12 +41,17 @@ describe('OnlineGame', () => {
     });
 
     describe('addPlayer', () => {
-        it('should add given id to list of player ids', () => {
-            expect(game.otherPlayerUniqIds).toEqual([]);
+        it('should add given player data to list of players', () => {
+            expect(game.players).toEqual({});
 
-            game.addPlayer('foo:bar');
+            game.addPlayer({
+                uniqId: 42,
+                name: 'Foo:bar',
+            });
 
-            expect(game.otherPlayerUniqIds).toEqual(['foo:bar']);
+            expect(game.players).toEqual({
+                42: { uniqId: 42, name: 'Foo:bar' },
+            });
         });
     });
 
@@ -118,15 +123,15 @@ describe('OnlineGame', () => {
     });
 
     describe('ludumjs_gameJoined', () => {
-        it('should game and player uniqIds from server', () => {
+        it('should store game and player uniqIds from server', () => {
             game.ludumjs_gameJoined(null, {
                 gameUniqId: 123,
                 playerUniqId: 456,
 
             });
 
-            expect(game.serverGameUniqId).toBe(123);
-            expect(game.serverPlayerUniqId).toBe(456);
+            expect(game.gameUniqId).toBe(123);
+            expect(game.playerUniqId).toBe(456);
         });
     });
 
@@ -141,12 +146,20 @@ describe('OnlineGame', () => {
     });
 
     describe('ludumjs_readyToPlay', () => {
-        it('should set list of other player uniq ids', () => {
-            game.serverPlayerUniqId = 'foo';
+        it('should set list of players', () => {
+            game.playerUniqId = '1';
            
-            game.ludumjs_readyToPlay(null, ['foo', 'bar', '123']);
+            game.ludumjs_readyToPlay(null, [
+                { uniqId: '1' },
+                { uniqId: '2' },
+                { uniqId: '3' },
+            ]);
 
-            expect(game.otherPlayerUniqIds).toEqual(['bar', '123']);
+            expect(game.players).toEqual({
+                1: { uniqId: '1' },
+                2: { uniqId: '2' },
+                3: { uniqId: '3' },
+            });
         });
     });
 

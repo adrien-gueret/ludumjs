@@ -1,6 +1,7 @@
 import * as socketio from 'socket.io';
 
 import GameCommon, { GameConstructor as GameCommonConstructor } from '../../common/lib/Game';
+import { PlayerData } from '../../common/lib/Player';
 import { withSocketListeners } from '../../common/lib/decorators/withSocketListeners';
 
 import Phase from './Phase';
@@ -79,10 +80,10 @@ export default class Game extends GameCommon {
         return this.players.length >= (<GameConstructor> this.constructor).MAX_PLAYERS;
     }
 
-    join(socket: socketio.Socket) {
+    join(socket: socketio.Socket, playerData: PlayerData = {}) {
         socket.join(this.uniqId);
 
-        const player = new Player(socket);
+        const player = new Player(socket, playerData);
         this.players.push(player);
 
         this.attachSocketEvent(socket);
@@ -96,7 +97,7 @@ export default class Game extends GameCommon {
             playerUniqId: player.uniqId,
         });
 
-        this.emitToAllPlayersExceptOne(player, 'ludumjs_newPlayerJoined', player.uniqId);
+        this.emitToAllPlayersExceptOne(player, 'ludumjs_newPlayerJoined', player.serialize());
     }
 
     onEnd(callback: Function) {
