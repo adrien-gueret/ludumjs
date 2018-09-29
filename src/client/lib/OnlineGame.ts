@@ -68,7 +68,7 @@ export default abstract class OnlineGame extends Game {
     }
 
     @socketEvent
-    ludumjs_readyToPlay(socket, allPlayers: Array<PlayerData>) {
+    ludumjs_gameFull(socket, allPlayers: Array<PlayerData>) {
         this.players = allPlayers.reduce((combinedPlayers: PlayerDataDictionnary, player: PlayerData) => ({
             ...combinedPlayers,
             [player.uniqId]: player,

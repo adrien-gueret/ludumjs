@@ -26,12 +26,16 @@ export default abstract class GameFactory {
         console.log(`[LudumJS] server listening on port ${port}`);
     }
 
-    create(...data:Array<unknown>): Game {
-        const game = new (Array.bind.apply(this.GameClass, [null].concat(data)));
+    create(socket: socketio.Socket = null, playerData: PlayerData = {}): Game {
+        const game = new this.GameClass();
         this.games.push(game);
-        game.setIo(this.io);
 
+        game.setIo(this.io);
         game.onEnd(() => this.deleteGame(game));
+
+        if (socket) {
+            this.join(socket, game.uniqId, playerData);   
+        }
 
         return game;
     }
@@ -46,7 +50,7 @@ export default abstract class GameFactory {
         game.join(socket, playerData);
 
         if (game.isFull()) {
-            game.emitToAllPlayers('ludumjs_readyToPlay', game.getPlayers().map(player => player.serialize()));
+            game.emitToAllPlayers('ludumjs_gameFull', game.getPlayers().map(player => player.serialize()));
         }
 
         return game;

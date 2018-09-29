@@ -22,14 +22,14 @@ describe('Game', () => {
             })),
         };
         socket = new Socket();
-        game = new MyGame(socket);
+        game = new MyGame();
         game.setIo(ioServer);
     });
 
     describe('constructor', () => {
         it('should correctly init instance', () => {
             expect((game as any).onEndCallbacks).toEqual([]);
-            expect((game as any).players.length).toBe(1);
+            expect((game as any).players.length).toBe(0);
         });
     });
 
@@ -43,9 +43,10 @@ describe('Game', () => {
 
     describe('getSockets', () => {
         it('should return instance sockets', () => {
-            const sockets = game.getSockets();
+            expect(game.getSockets()).toEqual([]);
 
-            expect(sockets).toEqual([socket]);
+            game.join(socket);
+            expect(game.getSockets()).toEqual([socket]);
         });
     });
 
@@ -77,6 +78,8 @@ describe('Game', () => {
 
             currentPhase.removeSocketEvent = jest.fn();
             newPhase.attachSocketEvent = jest.fn();
+
+            game.join(socket);
         });
 
         it('should remove socket listeners from current phase', () => {
@@ -98,6 +101,7 @@ describe('Game', () => {
         it('should append given socket to list of sockets', () => {
             const socket2 = new Socket();
 
+            game.join(socket);
             game.join(socket2);
 
             const sockets = game.getSockets();
@@ -143,6 +147,7 @@ describe('Game', () => {
         });
 
         it('should reset each attached socket', () => {
+            game.join(socket);
             game.end();
 
             expect(socket.removeAllListeners).toHaveBeenCalled();
@@ -150,6 +155,8 @@ describe('Game', () => {
         });
 
         it('should reset list of players', () => {
+            game.join(socket);
+            
             expect((game as any).players.length).toBe(1);
 
             game.end();

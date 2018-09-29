@@ -145,11 +145,11 @@ describe('OnlineGame', () => {
         });
     });
 
-    describe('ludumjs_readyToPlay', () => {
+    describe('ludumjs_gameFull', () => {
         it('should set list of players', () => {
             game.playerUniqId = '1';
            
-            game.ludumjs_readyToPlay(null, [
+            game.ludumjs_gameFull(null, [
                 { uniqId: '1' },
                 { uniqId: '2' },
                 { uniqId: '3' },

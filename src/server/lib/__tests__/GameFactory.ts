@@ -81,7 +81,7 @@ describe('GameFactory', () => {
             const newSocket = new Socket();
             factory.join(newSocket, game.uniqId);
 
-            expect(game.emitToAllPlayers).toHaveBeenCalledWith('ludumjs_readyToPlay', expect.any(Array));
+            expect(game.emitToAllPlayers).toHaveBeenCalledWith('ludumjs_gameFull', expect.any(Array));
         });
 
         it('should throw error if game is not found', () => {

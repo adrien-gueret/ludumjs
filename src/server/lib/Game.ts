@@ -17,22 +17,12 @@ export default class Game extends GameCommon {
     static MAX_PLAYERS: number = 2;
 
     private io: socketio.Server;
-    private onEndCallbacks: Array<Function>;
+    private onEndCallbacks: Array<Function> = [];
 
     protected players: Array<Player> = [];
 
     readonly phases: Array<Phase>;
     currentPhase: Phase|null;
-
-    constructor(socket?: socketio.Socket) {
-        super();
-      
-        this.onEndCallbacks = [];
-
-        if (socket) {
-            this.join(socket);
-        }
-    }
 
     setIo(io:socketio.Server) {
         this.io = io;
