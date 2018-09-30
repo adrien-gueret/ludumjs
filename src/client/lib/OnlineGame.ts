@@ -80,6 +80,15 @@ export default abstract class OnlineGame extends Game {
         this.goToPhaseById(phaseName, ...data);
     }
 
+    @socketEvent
+    ludumjs_activePlayers(socket, playerUniqIds: Array<string>) {
+        if (playerUniqIds.some(uniqId => uniqId === this.playerUniqId)) {
+            this.domContainer.classList.add('ludumjs-activePlayer');
+        } else {
+            this.domContainer.classList.remove('ludumjs-activePlayer');
+        }
+    }
+
     // withSocketListeners
     attachSocketEvent: (socket: SocketIO.Socket) => void;
     removeSocketEvent: (socket: socketio.Socket) => void;

@@ -1,6 +1,7 @@
 jest.mock('socket.io');
 
 import Socket from '../../../common/__mocks__/Socket.mock';
+import arrays from '../../../common/utils/arrays';
 
 import Game from '../Game';
 import Phase from '../Phase';
@@ -216,6 +217,118 @@ describe('Game', () => {
                     data: ['foo', 'bar'],
                 }
             );
+        });
+    });
+
+    describe('getRandomPlayer', () => {
+        it('should return a random player', () => {
+            jest.spyOn(arrays, 'getRandomItem');
+            game.getRandomPlayer();
+            expect(arrays.getRandomItem).toHaveBeenCalledWith(game.players);
+        });
+    });
+
+    describe('getPlayerByUniqId', () => {
+        it('should return a player by its id', () => {
+            game.join(socket);
+
+            const player = game.players[0];
+
+            const playerGotten = game.getPlayerByUniqId(player.uniqId);
+
+            expect(playerGotten).toBe(player);
+        });
+    });
+
+    describe('activeNextPlayer', () => {
+        let player1;
+        let player2;
+        let player3;
+
+        beforeEach(() => {
+            game.join(socket);
+            game.join(socket);
+            game.join(socket);
+
+            player1 = game.players[0];
+            player2 = game.players[1];
+            player3 = game.players[2];
+        });
+
+        it('should marke players as active one by one', () => {    
+            jest.spyOn(game, 'setActivePlayer');
+
+            game.activeNextPlayer();
+            game.activeNextPlayer();
+            game.activeNextPlayer();
+            game.activeNextPlayer();
+
+            expect(game.setActivePlayer).toHaveBeenCalledTimes(4);
+            expect(game.setActivePlayer).toHaveBeenCalledWith(player1);
+            expect(game.setActivePlayer).toHaveBeenCalledWith(player2);
+            expect(game.setActivePlayer).toHaveBeenCalledWith(player3);
+        });
+    });
+
+    describe('setActivePlayers', () => {
+        let player1;
+        let player2;
+
+        beforeEach(() => {
+            game.join(socket);
+            game.join(socket);
+            game.join(socket);
+
+            player1 = game.players[0];
+            player2 = game.players[1];
+        });
+
+        it('should marke given players as active', () => {    
+            game.setActivePlayers([player1, player2]);
+
+            expect(game.activePlayerUniqIds).toEqual([player1.uniqId, player2.uniqId]);
+        });
+
+        it('should handle player uniq ids', () => {    
+            game.setActivePlayers([player1.uniqId, player2.uniqId]);
+
+            expect(game.activePlayerUniqIds).toEqual([player1.uniqId, player2.uniqId]);
+        });
+    });
+
+    describe('getActivePlayers', () => {
+        it('should return an array of active players', () => {
+            game.join(socket);
+            
+            const player = game.players[0];
+            game.setActivePlayer(player);
+
+            const activePlayers = game.getActivePlayers();
+
+            expect(activePlayers).toEqual([player]);
+        });
+    });
+
+    describe('isPlayerActive', () => {
+        let player;
+
+        beforeEach(() => {
+            game.join(socket);
+            
+            player = game.players[0];
+            game.setActivePlayer(player);
+        });
+
+        it('should return if given player is active or not', () => {
+            const isActive = game.isPlayerActive(player);
+
+            expect(isActive).toBe(true);
+        });
+
+        it('should handle player uniq id', () => {    
+            const isActive = game.isPlayerActive(player.uniqId);
+
+            expect(isActive).toBe(true);
         });
     });
 });

@@ -176,4 +176,25 @@ describe('OnlineGame', () => {
             expect(game.goToPhaseById).toHaveBeenCalledWith('TestPhase', 'foo', 'bar');
         });
     });
+
+    describe('ludumjs_activePlayers', () => {
+        beforeEach(() => {
+            game.playerUniqId = '1';
+
+            spyOn(game.domContainer.classList, 'add');
+            spyOn(game.domContainer.classList, 'remove');
+        });
+
+        it('should add active class if game player is active', () => {
+            game.ludumjs_activePlayers(null, ['1', '2']);
+
+            expect(game.domContainer.classList.add).toHaveBeenCalledWith('ludumjs-activePlayer');
+        });
+
+        it('should remove active class if game player NOT active', () => {
+            game.ludumjs_activePlayers(null, ['2', '3']);
+
+            expect(game.domContainer.classList.remove).toHaveBeenCalledWith('ludumjs-activePlayer');
+        });
+    });
 });

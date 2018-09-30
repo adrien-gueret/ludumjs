@@ -4,6 +4,8 @@ import GameCommon, { GameConstructor as GameCommonConstructor } from '../../comm
 import { PlayerData } from '../../common/lib/Player';
 import { withSocketListeners } from '../../common/lib/decorators/withSocketListeners';
 
+import arrays from '../../common/utils/arrays';
+
 import Phase from './Phase';
 import Player from './Player';
 
@@ -20,13 +22,10 @@ export default class Game extends GameCommon {
     private onEndCallbacks: Array<Function> = [];
 
     protected players: Array<Player> = [];
+    protected activePlayerUniqIds: Array<string> = [];
 
     readonly phases: Array<Phase>;
     currentPhase: Phase|null;
-
-    setIo(io:socketio.Server) {
-        this.io = io;
-    }
 
     emitToAllPlayers(eventName: string, eventData: unknown = {}) {
         this.io.to(this.uniqId).emit(eventName, eventData);
@@ -50,6 +49,69 @@ export default class Game extends GameCommon {
 
     getPlayers(): Array<Player> {
         return this.players;
+    }
+
+    getRandomPlayer(): Player {
+        return arrays.getRandomItem(this.players);
+    }
+
+    getPlayerByUniqId(uniqId: string): Player {
+        return this.players.filter(player => player.uniqId === uniqId)[0];
+    }
+
+    getActivePlayers(): Array<Player> {
+        return this.activePlayerUniqIds.map(uniqid => this.getPlayerByUniqId(uniqid));
+    }
+
+    setActivePlayers(players: Array<Player|string>) {
+        this.activePlayerUniqIds = [];
+
+        players.forEach(player => {
+            if (player instanceof Player) {
+                this.activePlayerUniqIds.push(player.uniqId);
+            } else {
+                this.activePlayerUniqIds.push(player);
+            }    
+        });
+
+        this.emitToAllPlayers('ludumjs_activePlayers', this.activePlayerUniqIds);
+    }
+
+    setActivePlayer(player: Player|string) {
+        this.setActivePlayers([player]);
+    }
+
+    activeNextPlayer(): Player {
+        const currentActivePlayerUniqId = this.activePlayerUniqIds[0];
+
+        if (!currentActivePlayerUniqId) {
+            const activePlayer = this.getRandomPlayer();
+            this.setActivePlayer(activePlayer);
+
+            return activePlayer;
+        }
+
+        const playerUniqIds = this.players.map(player => player.uniqId);
+        const currentActivePlayerIndex = playerUniqIds.indexOf(currentActivePlayerUniqId);
+        let nextActivePlayerIndex = currentActivePlayerIndex + 1;
+
+        if (nextActivePlayerIndex > this.players.length - 1) {
+            nextActivePlayerIndex = 0;
+        }
+
+        const nextActivePlayer = this.players[nextActivePlayerIndex];
+
+        this.setActivePlayer(nextActivePlayer);
+
+        return nextActivePlayer;
+    }
+
+    isPlayerActive(player: Player|string) {
+        if (player instanceof Player) {
+            return this.activePlayerUniqIds.some(uniqId => uniqId === player.uniqId);
+        }
+
+        return this.activePlayerUniqIds.some(uniqId => uniqId === player);
     }
 
     getSockets(): Array<socketio.Socket> {
@@ -102,6 +164,10 @@ export default class Game extends GameCommon {
             socket.disconnect(true);
         });
         this.players = [];
+    }
+
+    setIo(io:socketio.Server) {
+        this.io = io;
     }
 
     // withSocketListeners
