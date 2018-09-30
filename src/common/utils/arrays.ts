@@ -23,7 +23,12 @@ export function convert1DIndexInto2DIndex(index: number, nbrColumnsIn2DArray: nu
     };
 }
 
+export function getRandomItem<T>(array: Array<T>): T {
+    return array[Math.floor(Math.random() * array.length)];
+}
+
 export default {
-    convert1DIndexInto2DIndex,
     shuffleArray,
+    convert1DIndexInto2DIndex,
+    getRandomItem,
 };
