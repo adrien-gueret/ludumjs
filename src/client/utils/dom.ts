@@ -26,4 +26,16 @@ export default {
             }, duration);
         });
     },
+
+    getElementIndex(element: Element): number {
+        let index = 0;
+        let prevElement = element;
+
+        while (prevElement.previousElementSibling) {
+            index++;
+            prevElement = prevElement.previousElementSibling;
+        }
+
+        return index;
+    },
 };
