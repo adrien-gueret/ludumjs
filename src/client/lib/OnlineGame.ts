@@ -22,6 +22,8 @@ export default abstract class OnlineGame extends Game {
     playerUniqId: string;
     gameUniqId: string;
 
+    isPlayerActive: boolean = false;
+
     readonly phases: Array<Phase|OnlinePhase>;
 
     constructor(domContainer: HTMLElement) {
@@ -82,7 +84,9 @@ export default abstract class OnlineGame extends Game {
 
     @socketEvent
     ludumjs_activePlayers(socket, playerUniqIds: Array<string>) {
-        if (playerUniqIds.some(uniqId => uniqId === this.playerUniqId)) {
+        this.isPlayerActive = playerUniqIds.some(uniqId => uniqId === this.playerUniqId);
+
+        if (this.isPlayerActive) {
             this.domContainer.classList.add('ludumjs-activePlayer');
         } else {
             this.domContainer.classList.remove('ludumjs-activePlayer');
