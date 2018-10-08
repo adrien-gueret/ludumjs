@@ -6,6 +6,8 @@ describe('utils/dom', () => {
            const domElement = document.createElement('div');
            const container = document.createElement('div');
 
+           domElement.style.setProperty('transform', 'scale(.8)');
+
            jest.spyOn(domElement, 'cloneNode');
            jest.spyOn(container, 'appendChild');
            
