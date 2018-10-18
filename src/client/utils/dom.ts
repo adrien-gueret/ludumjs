@@ -11,31 +11,33 @@ export default {
 
         newContainer.appendChild(domElement);
 
-        let { left: newLeft, top: newTop, width, height } = domElement.getBoundingClientRect();
-
-        // Handle scaled elements 
-        const transform = window.getComputedStyle(domElement).transform;
-        const matrix = /^matrix\((.+)\)$/.exec(transform);
-       
-        /* istanbul ignore next */
-        if (matrix && matrix[1]) {
-            const [scaleX,,, scaleY] = matrix[1].split(',').map(x => +x);
-
-            newLeft -= ((width / scaleX) - width) / 2;
-            newTop -= ((height / scaleY) - height) / 2;
-        }
-
-        domElement.style.setProperty('opacity', '0');
-
-        cloneNode.style.setProperty('left', `${newLeft}px`);
-        cloneNode.style.setProperty('top', `${newTop}px`);
-
         return new Promise((resolve) => {
-            window.setTimeout(() => {
-                domElement.style.removeProperty('opacity');
-                cloneNode.parentNode.removeChild(cloneNode);
-                resolve();
-            }, duration);
+            window.requestAnimationFrame(() => {
+                let { left: newLeft, top: newTop, width, height } = domElement.getBoundingClientRect();
+    
+                // Handle scaled elements 
+                const transform = window.getComputedStyle(domElement).transform;
+                const matrix = /^matrix\((.+)\)$/.exec(transform);
+            
+                /* istanbul ignore next */
+                if (matrix && matrix[1]) {
+                    const [scaleX,,, scaleY] = matrix[1].split(',').map(x => +x);
+    
+                    newLeft -= ((width / scaleX) - width) / 2;
+                    newTop -= ((height / scaleY) - height) / 2;
+                }
+    
+                domElement.style.setProperty('opacity', '0');
+    
+                cloneNode.style.setProperty('left', `${newLeft}px`);
+                cloneNode.style.setProperty('top', `${newTop}px`);
+
+                window.setTimeout(() => {
+                    domElement.style.removeProperty('opacity');
+                    cloneNode.parentNode.removeChild(cloneNode);
+                    resolve();
+                }, duration);
+            });
         });
     },
 
