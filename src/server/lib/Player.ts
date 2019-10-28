@@ -16,6 +16,16 @@ export default class Player {
         this.customData = customData;
     }
 
+    setSocket(socket: socketio.Socket): this {
+        if (this.socket) {
+            this.socket.disconnect();
+        }
+
+        this.socket = socket;
+
+        return this;
+    }
+
     serialize(): PlayerData {
         return {
             ...this.customData,

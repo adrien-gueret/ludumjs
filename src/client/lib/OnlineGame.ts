@@ -16,6 +16,7 @@ function getRootUrl() {
 @withSocketListeners
 export default abstract class OnlineGame extends Game {
     private socket: SocketIO.Socket;
+    protected localStorageKeys: { [key: string]: string };
     
     players: PlayerDataDictionnary = {};
 
@@ -29,6 +30,10 @@ export default abstract class OnlineGame extends Game {
     constructor(domContainer: HTMLElement) {
         super(domContainer);
         this.socket = null;
+        this.localStorageKeys = {
+            gameId: 'ludumjs_game_id',
+            playerId: 'ludumjs_player_id',
+        };
     }
 
     addPlayer(player: PlayerData) {
@@ -39,7 +44,23 @@ export default abstract class OnlineGame extends Game {
         this.socket = socketio(port === null ? serverUrl : `${serverUrl}:${port}`);
         this.attachSocketEvent(this.socket);
 
+        this.checkReconnection();
+
         return this.socket;
+    }
+
+    checkReconnection(): boolean {
+        const gameId = localStorage.getItem(this.localStorageKeys.gameId);
+        const playerId = localStorage.getItem(this.localStorageKeys.playerId);
+
+        if (!gameId || !playerId) {
+            return false;
+        }
+
+        this.socket.emit('ludumjs_reconnectToGame', { gameId, playerId });
+        // Todo: call a callback so that developer can display a message if he wants to
+
+        return true;
     }
 
     getSocket(): SocketIO.Socket {
@@ -58,10 +79,27 @@ export default abstract class OnlineGame extends Game {
         super.goToPhase(targetPhase, ...data);
     }
 
+    clearLocalStorage() {
+        const removeFromLocalStorage = localStorage.removeItem.bind(localStorage);
+
+        Object
+            .keys(this.localStorageKeys)
+            .map(keyName => this.localStorageKeys[keyName])
+            .forEach(removeFromLocalStorage);
+    }
+
+    @socketEvent
+    /* istanbul ignore next */
+    disconnect(socket) {
+        // TODO: do something
+    }
+
     @socketEvent
     ludumjs_gameJoined(socket, { gameUniqId, playerUniqId } : { gameUniqId: string, playerUniqId: string }) {
         this.gameUniqId = gameUniqId;
         this.playerUniqId = playerUniqId;
+        localStorage.setItem(this.localStorageKeys.gameId, gameUniqId);
+        localStorage.setItem(this.localStorageKeys.playerId, playerUniqId);
     }
 
     @socketEvent
@@ -91,6 +129,11 @@ export default abstract class OnlineGame extends Game {
         } else {
             this.domContainer.classList.remove('ludumjs-activePlayer');
         }
+    }
+
+    @socketEvent
+    ludumsjs_cantReconnect() {
+        this.clearLocalStorage();
     }
 
     // withSocketListeners

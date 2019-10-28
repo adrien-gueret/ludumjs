@@ -21,6 +21,11 @@ describe('GameFactory', () => {
     beforeEach(() => {
         MyGame.MAX_PLAYERS = 10;
         factory = new MyGameFactory(MyGame);
+        jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+        jest.clearAllTimers();
     });
 
     describe('constructor', () => {
@@ -100,8 +105,15 @@ describe('GameFactory', () => {
     });
 
     describe('listen', () => {
+        let originalLog;
+
         beforeEach(() => {
+            originalLog = console.log;
             console.log = jest.fn();
+        });
+
+        afterEach(() => {
+            console.log = originalLog;
         });
 
         it('should create a socket.io server on given port', () => {
@@ -127,6 +139,7 @@ describe('GameFactory', () => {
     describe('onSocketConnection', () => {
         it('should emit "connection" event and send given data', () => {
             const socket = {
+                on: jest.fn(),
                 emit: jest.fn(),
             };
 
@@ -149,6 +162,81 @@ describe('GameFactory', () => {
 
             expect(factory.games.length).toBe(2);
             expect(factory.games).not.toContain(gameToDelete);
+        });
+    });
+
+    describe('disconnect', () => {
+        let socketToDisconnect;
+        let game;
+        let player;
+
+        beforeEach(() => {
+            socketToDisconnect = new Socket();
+            socketToDisconnect.id = '123';
+            game = factory.create(socketToDisconnect);
+            player = game.getPlayers()[0];
+            jest.spyOn(game, 'emitToAllPlayersExceptOne');
+        });
+
+        it('should emit "player connection difficulties" event after timeout delay', () => {
+            factory.disconnect(socketToDisconnect);
+           
+            expect(game.emitToAllPlayersExceptOne)
+                .toHaveBeenCalledWith(
+                    player,
+                    'ludumjs_playerConnectionDifficulties',
+                    player.serialize(),
+                );
+        });
+
+        it('should emit "player left" event after timeout delay', () => {
+            factory.disconnect(socketToDisconnect);
+
+            jest.advanceTimersByTime(factory.reconnectTimeoutDelay);
+           
+            expect(game.emitToAllPlayersExceptOne)
+                .toHaveBeenCalledWith(
+                    player,
+                    'ludumjs_playerLeft',
+                    player.serialize(),
+                );
+        });
+
+        it('should NOT emit "player left" if no corresponding game found', () => {
+            factory.disconnect(new Socket());
+
+            expect(game.emitToAllPlayersExceptOne).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('ludumjs_reconnectToGame', () => {
+        let socketToReconnect;
+        let game;
+        let player;
+
+        beforeEach(() => {
+            socketToReconnect = new Socket();
+            game = factory.create(socketToReconnect);
+            player = game.getPlayers()[0];
+            player.socket = null;
+        });
+
+        it('should emit "cant reconnect" event if no game found', () => {
+            factory.ludumjs_reconnectToGame(socketToReconnect, { gameId: 0 });
+
+            expect(socketToReconnect.emit).toHaveBeenCalledWith('ludumsjs_cantReconnect');
+        });
+
+        it('should emit "cant reconnect" event if no player found', () => {
+            factory.ludumjs_reconnectToGame(socketToReconnect, { gameId: game.uniqId, playerId: 0 });
+
+            expect(socketToReconnect.emit).toHaveBeenCalledWith('ludumsjs_cantReconnect');
+        });
+
+        it('should set socket to given player', () => {
+            factory.ludumjs_reconnectToGame(socketToReconnect, { gameId: game.uniqId, playerId: player.uniqId });
+
+            expect(player.socket).toBe(socketToReconnect);
         });
     });
 });

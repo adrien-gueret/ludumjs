@@ -34,6 +34,10 @@ describe('OnlineGame', () => {
         socketio.mockReturnValue(mockedSocket);
     });
 
+    afterEach(() => {
+        localStorage.clear();
+    });
+
     describe('constructor', () => {
         it('should correctly init instance', () => {
             expect((game as any).socket).toBeNull();
@@ -122,6 +126,61 @@ describe('OnlineGame', () => {
         });
     });
 
+    describe('checkReconnection', () => {
+        let socket;
+
+        beforeEach(() => {
+            socket = new Socket();
+            game.socket = socket;
+            game.socket.emit = jest.fn();
+        });
+
+        it('should return false if no stored game id', () => {
+            localStorage.setItem(game.localStorageKeys.playerId, '123');
+            localStorage.removeItem(game.localStorageKeys.gameId);
+            
+            const value = game.checkReconnection();
+
+            expect(value).toBe(false);
+            expect(game.socket.emit).not.toHaveBeenCalled();
+        });
+
+        it('should return false if no stored player id', () => {
+            localStorage.setItem(game.localStorageKeys.gameId, '123');
+            localStorage.removeItem(game.localStorageKeys.playerId);
+            
+            const value = game.checkReconnection();
+
+            expect(value).toBe(false);
+            expect(game.socket.emit).not.toHaveBeenCalled();
+        });
+
+        it('should return true if stored player and gamer ids', () => {
+            localStorage.setItem(game.localStorageKeys.gameId, '123');
+            localStorage.setItem(game.localStorageKeys.playerId, '456');
+            
+            const value = game.checkReconnection();
+
+            expect(value).toBe(true);
+            expect(game.socket.emit).toHaveBeenCalledWith('ludumjs_reconnectToGame', {
+                gameId: '123',
+                playerId: '456',
+            });
+        });
+    });
+
+    describe('clearLocalStorage', () => {
+        it('should clear local storage', () => {
+            localStorage.setItem(game.localStorageKeys.playerId, '123');
+            localStorage.setItem(game.localStorageKeys.gameId, '456');
+            
+            game.clearLocalStorage();
+
+            expect(localStorage.getItem(game.localStorageKeys.playerId)).toBeNull();
+            expect(localStorage.getItem(game.localStorageKeys.gameId)).toBeNull();
+        });
+    });
+
     describe('ludumjs_gameJoined', () => {
         it('should store game and player uniqIds from server', () => {
             game.ludumjs_gameJoined(null, {
@@ -195,6 +254,16 @@ describe('OnlineGame', () => {
             game.ludumjs_activePlayers(null, ['2', '3']);
 
             expect(game.domContainer.classList.remove).toHaveBeenCalledWith('ludumjs-activePlayer');
+        });
+    });
+
+    describe('ludumsjs_cantReconnect', () => {
+        it('should clear local storage', () => {
+            jest.spyOn(game, 'clearLocalStorage');
+            
+            game.ludumsjs_cantReconnect();
+
+            expect(game.clearLocalStorage).toHaveBeenCalled();
         });
     });
 });
