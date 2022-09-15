@@ -1,6 +1,6 @@
-import { getRandomItem, shuffleArray, convert1DIndexInto2DIndex } from '../arrays';
+import { getRandomItem, shuffleArray, convert1DIndexInto2DIndex } from '../array';
 
-describe('utils/arrays', () => {
+describe('utils/array', () => {
     describe('getRandomItem', () => {
         let array;
 

@@ -24,7 +24,7 @@ export function convert1DIndexInto2DIndex(index: number, nbrColumnsIn2DArray: nu
 }
 
 export function getRandomItem<T>(array: Array<T>): T {
-    return array[Math.floor(Math.random() * array.length)];
+    return array[random(0, array.length - 1)];
 }
 
 export default {

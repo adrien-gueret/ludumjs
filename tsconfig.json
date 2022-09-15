@@ -9,6 +9,6 @@
         "removeComments": true
     },
     "files": ["index.ts"],
-    "include": ["src/**/*"],
+    "include": ["lib/**/*", "utils/**/*"],
     "exclude": ["node_modules", "**/__tests__/*", "**/__mocks__/*"]
 }
