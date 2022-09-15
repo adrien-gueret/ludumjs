@@ -1,0 +1,41 @@
+.ludumjs-dialog {
+	display: none;
+	pointer-events: none;
+    background: #fff;
+    color: #000;
+    padding: 24px;
+    min-width: 280px;
+    border-radius: 12px;
+	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+	transform: translateY(999px);
+	transition: transform 200ms;
+	font-size: 1.5rem;
+	line-height: 3rem;
+}
+
+.ludumjs-dialog--visible {
+	transform: translateY(0);
+}
+
+.ludumjs-dialog--visible [data-action] {
+	pointer-events: initial;
+}
+
+.ludumjs-dialogs-container {
+	display: flex;
+	z-index: 999;
+	pointer-events: initial;
+	position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+	background: rgba(0, 0, 0, .5);
+	justify-content: center;
+	align-items: center;
+}
+
+.ludumjs-dialogs-container .ludumjs-dialog {
+	display: block;
+	pointer-events: initial;
+}
