@@ -1,19 +1,67 @@
-import GameCommon from '../../common/lib/Game';
-import assert from '../../common/utils/assert';
+import assert from '../utils/assert';
 
-export default class Game extends GameCommon {
+import Phase from './Phase';
+
+
+export default class Game {
     readonly domContainer: HTMLElement;
 
-    private readonly dialogs: Array<HTMLElement>;
+    protected readonly phases: Array<Phase>;
+    protected readonly dialogs: Array<HTMLDialogElement>;
+    protected currentPhase: Phase|null;
 
     constructor(domContainer: HTMLElement) {
-        super();
+        this.phases = [];
+        this.currentPhase = null;
 
         this.domContainer = domContainer;
         this.domContainer.classList.add('ludumjs-game-container');
 
         this.dialogs = Array.from(this.domContainer.querySelectorAll('[data-dialog]'));
         this.dialogs.forEach(dialog => dialog.classList.add('ludumjs-dialog'));
+    }
+
+    registerPhase(PhaseClass: new (game: this) => Phase): this {
+        const phaseInstance = new PhaseClass(this);
+
+        assert(phaseInstance instanceof Phase, `Game.registerPhase: ${PhaseClass.toString()} must inherit from LudumJS.Phase`);
+        
+        const isPhaseAlreadyExisted = this.phases.some(phase => phase.constructor.name === PhaseClass.name);
+
+        assert(!isPhaseAlreadyExisted, `Game.registerPhase: ${PhaseClass.name} is already registered`);
+
+        this.phases.push(phaseInstance);
+
+        return this;
+    }
+
+    registerPhases(phaseClasses: Array<new (game: this) => Phase>): this {
+        phaseClasses.forEach(PhaseClass => this.registerPhase(PhaseClass));
+        return this;
+    }
+
+    getPhaseByName(phaseName: string): void|Phase {
+        return this.phases.filter(phase => phase.constructor.name === phaseName)[0];
+    }
+
+    goToPhase(targetPhase: Phase, ...data: Parameters<Phase['start']>): void {
+        if (this.currentPhase) {
+            this.currentPhase.end();
+        }
+
+        this.currentPhase = targetPhase;
+        this.currentPhase.start(...data);
+    }
+
+    goToPhaseByName(phaseName: string, ...data: Parameters<Phase['start']>): void {
+        const targetPhase = this.getPhaseByName(phaseName);
+        assert(Boolean(targetPhase), `Game.goToPhaseByName: no phase with name "${phaseName}" found. Did you register it?`);
+        this.goToPhase(targetPhase as Phase, ...data);
+    }
+
+    start(...data: Parameters<Phase['start']>): this {
+        this.goToPhase(this.phases[0], ...data);
+        return this;
     }
 
     getDialog(dialogId: string): HTMLElement|null {

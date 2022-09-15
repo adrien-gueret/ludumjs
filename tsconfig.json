@@ -3,14 +3,12 @@
         "allowJs": false,
         "experimentalDecorators": true,
         "downlevelIteration": true,
-        "target": "es5",
-        "lib": ["es6", "dom"],
+        "target": "es6",
+        "module": "es6",
+        "moduleResolution": "node",
         "removeComments": true
     },
-    "files": [
-        "client.ts",
-        "server.ts",
-    ],
+    "files": ["index.ts"],
     "include": ["src/**/*"],
     "exclude": ["node_modules", "**/__tests__/*", "**/__mocks__/*"]
 }

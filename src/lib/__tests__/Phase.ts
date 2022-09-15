@@ -6,9 +6,10 @@ describe('Phase', () => {
     let MyPhase;
 
     beforeEach(() => {
-        MyGame = class extends Game {};
-        MyPhase = class extends Phase {
-            static id = 'MyPhase';
+        MyGame = class MyGame extends Game {};
+        MyPhase = class MyPhase extends Phase {
+            onStart() {}
+            onEnd() {}
             onAction() {}
         };
     });
@@ -19,32 +20,6 @@ describe('Phase', () => {
             const phase = new MyPhase(game);
 
             expect(phase.game).toBe(game);
-            expect(phase.onActionHandler).toBeDefined();
-        });
-
-        it('should set onActionHandler to null if onAction is NOT defined', () => {
-            MyPhase = class extends Phase {
-                static id = 'MyPhase';
-            };
-
-            const game = new MyGame(document.createElement('div'));
-            const phase = new MyPhase(game);
-
-            expect(phase.game).toBe(game);
-            expect(phase.onActionHandler).toBeNull();
-        });
-
-        it('should set onActionHandler to function if onAction is defined', () => {
-            MyPhase = class extends Phase {
-                static id = 'MyPhase';
-                onAction() {};
-            };
-
-            const game = new MyGame(document.createElement('div'));
-            const phase = new MyPhase(game);
-
-            expect(phase.game).toBe(game);
-            expect(phase.onActionHandler).toBeInstanceOf(Function);
         });
     });
 
@@ -165,23 +140,47 @@ describe('Phase', () => {
 
                 expect(domContainer.classList.remove).toHaveBeenCalledWith('my-phase');
             });
+
+            it('should NOT alter game container if onEnd return false', async () => {
+                phase.onEnd = jest.fn(() => false);
+
+                const { domContainer } = phase.game;
+                domContainer.removeEventListener = jest.fn();
+                domContainer.classList.remove = jest.fn();
+
+                await phase.end();
+
+                expect(domContainer.removeEventListener).not.toHaveBeenCalled();
+                expect(domContainer.classList.remove).not.toHaveBeenCalled();
+            });
+
+            it('should NOT alter game container if onEnd return a promise resolving false', async () => {
+                phase.onStart = jest.fn(async () => false);
+
+                const { domContainer } = phase.game;
+                domContainer.removeEventListener = jest.fn();
+                domContainer.classList.remove = jest.fn();
+
+                await phase.start();
+
+                expect(domContainer.removeEventListener).not.toHaveBeenCalled();
+                expect(domContainer.classList.remove).not.toHaveBeenCalled();
+            });
         });
 
-        describe('wrapOnAction', () => {
+        describe('onActionHandler', () => {
             let myEvent;
-            let onActionWrapped;
 
             beforeEach(() => {
                 myEvent = {
                     target: null,
                 };
 
-                onActionWrapped = phase.wrapOnAction();
                 phase.onAction = jest.fn();
             });
 
             it('should NOT call onAction if event has no targets', () => {
-                onActionWrapped(myEvent);
+                phase.onActionHandler(myEvent);
                 expect(phase.onAction).not.toHaveBeenCalled();
             });
 
@@ -191,7 +190,7 @@ describe('Phase', () => {
 
                 parentNode.appendChild(myEvent.target);
 
-                onActionWrapped(myEvent);
+                phase.onActionHandler(myEvent);
                 expect(phase.onAction).not.toHaveBeenCalled();
             });
 
@@ -202,7 +201,7 @@ describe('Phase', () => {
                 nodeWithAction.dataset.action = 'test';
                 nodeWithAction.appendChild(myEvent.target);
 
-                onActionWrapped(myEvent);
+                phase.onActionHandler(myEvent);
 
                 expect(phase.onAction).toHaveBeenCalledWith({
                     action: 'test',

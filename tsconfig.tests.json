@@ -2,7 +2,9 @@
     "extends": "./tsconfig",
     "compilerOptions": {
         "target": "es6",
-        "lib": ["dom"],
+        "module": "es6",
+        "moduleResolution": "node",
+        "esModuleInterop": true,
         "removeComments": false
     }
 }

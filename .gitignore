@@ -5,3 +5,4 @@ yarn.error
 yarn-error.log
 dist
 *.js
+.history

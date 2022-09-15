@@ -1,4 +1,3 @@
-import PhaseCommon, { PhaseConstructor } from '../../common/lib/Phase';
 import { getClickEvent } from '../utils/events';
 import Game from './game';
 
@@ -6,15 +5,11 @@ const clickEventName = getClickEvent();
 
 interface OnActionPayload {
     action: string,
-    event: Event,
+    event: MouseEvent | TouchEvent,
     target: HTMLElement,
 }
 
-interface Phase {
-    onAction?(payload: OnActionPayload): void;
-}
-
-function getFirstElementWithAction(element: HTMLElement) {
+function getFirstElementWithAction(element: HTMLElement): HTMLElement | null {
     let target = element;
 
     if (!target) {
@@ -32,59 +27,68 @@ function getFirstElementWithAction(element: HTMLElement) {
     return null;
 }
 
-abstract class Phase extends PhaseCommon {
+interface Phase {
+    onStart?(...data:Array<unknown>): boolean|void | Promise<boolean|void>;
+    onEnd?(): boolean|void;
+    onAction?(actionData?: OnActionPayload): void;
+}
+
+abstract class Phase {
     readonly game: Game;
     
     constructor(game: Game) {
-        super(game);
-        this.onActionHandler = this.onAction ? this.wrapOnAction() : null;
-    }
-
-    private onActionHandler: EventListener|null;
-
-    private wrapOnAction() {
-        return ((event: Event) => {
-            const target = getFirstElementWithAction(event.target as HTMLElement);
-
-            if (!target) {
-                return;
-            }
-
-            this.onAction({
-                action: target.dataset.action,
-                event,
-                target,
-            });
-        }).bind(this);
+        this.game = game;
     }
 
     getClassName(): string {
-        return (this.constructor as PhaseConstructor).id
+        return this.constructor.name
             .replace(/\.?([A-Z]+)/g, (x, y) => `-${y.toLowerCase()}`)
             .replace(/^-/, '');
     }
 
-    async start(...data:Array<any>): Promise<void> {
-        const result = await super.start(...data);
+    onActionHandler = (event: MouseEvent|TouchEvent) => {
+        const target = getFirstElementWithAction(event.target as HTMLElement);
 
-        if (result === false) {
+        if (!target) {
             return;
+        }
+
+        this.onAction({
+            action: target.dataset.action,
+            event,
+            target,
+        });
+    };
+
+    async start(...data:Array<unknown>): Promise<void> {
+        if (this.onStart) {
+            const result = await this.onStart(...data);
+
+            if (result === false) {
+                return;
+            }
         }
 
         if (this.onAction) {
             this.game.domContainer.addEventListener(clickEventName, this.onActionHandler);
         }
-    
+        
         this.game.domContainer.classList.add(this.getClassName());
     }
 
     async end(): Promise<void> {
-        await super.end();
+        if (this.onEnd) {
+            const result = await this.onEnd();
+
+            if (result === false) {
+                return;
+            }
+        }
 
         if (this.onAction) {
             this.game.domContainer.removeEventListener(clickEventName, this.onActionHandler);
         }
-        
+
         this.game.domContainer.classList.remove(this.getClassName());
     }
 }
