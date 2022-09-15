@@ -9,6 +9,7 @@ export default class Game {
     protected readonly phases: Array<Phase>;
     protected readonly dialogs: Array<HTMLDialogElement>;
     protected currentPhase: Phase|null;
+    protected dynamicStyleSheet: HTMLStyleElement;
 
     constructor(domContainer: HTMLElement) {
         this.phases = [];
@@ -19,9 +20,12 @@ export default class Game {
 
         this.dialogs = Array.from(this.domContainer.querySelectorAll('[data-dialog]'));
         this.dialogs.forEach(dialog => dialog.classList.add('ludumjs-dialog'));
+
+        this.dynamicStyleSheet = document.createElement('style');
+        document.head.appendChild(this.dynamicStyleSheet);
     }
 
-    registerPhase(PhaseClass: new (game: this) => Phase): this {
+    registerPhase(PhaseClass: typeof Phase): this {
         const phaseInstance = new PhaseClass(this);
 
         assert(phaseInstance instanceof Phase, `Game.registerPhase: ${PhaseClass.toString()} must inherit from LudumJS.Phase`);
@@ -30,12 +34,15 @@ export default class Game {
 
         assert(!isPhaseAlreadyExisted, `Game.registerPhase: ${PhaseClass.name} is already registered`);
 
+        const phaseClassName = phaseInstance.getClassName();
+        this.dynamicStyleSheet.sheet.insertRule(`.ludumjs-game-container.${phaseClassName} [data-phase~="${phaseClassName}"]{display: ${PhaseClass.displayValue};}`, 0);
+
         this.phases.push(phaseInstance);
 
         return this;
     }
 
-    registerPhases(phaseClasses: Array<new (game: this) => Phase>): this {
+    registerPhases(phaseClasses: Array<typeof Phase>): this {
         phaseClasses.forEach(PhaseClass => this.registerPhase(PhaseClass));
         return this;
     }

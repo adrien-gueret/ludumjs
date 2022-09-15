@@ -33,8 +33,9 @@ interface Phase {
     onAction?(actionData?: OnActionPayload): void;
 }
 
-abstract class Phase {
+class Phase {
     readonly game: Game;
+    static displayValue = 'block';
     
     constructor(game: Game) {
         this.game = game;

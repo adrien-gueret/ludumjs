@@ -36,6 +36,10 @@ describe('Game', () => {
 
            expect(game.dialogs.every(dialog => dialog.classList.contains('ludumjs-dialog'))).toBe(true);
         });
+
+        it('should inject style to document', () => {
+            expect(game.dynamicStyleSheet).toBeInTheDocument();
+        });
     });
 
     describe('start', () => {
@@ -65,6 +69,18 @@ describe('Game', () => {
 
             expect(phase).toBeInstanceOf(MyPhase);
             expect(phase.game).toBe(game);
+        });
+
+        it('should add CSS rule about new registered phase', () => {
+            game.registerPhase(MyPhase);
+            expect(game.dynamicStyleSheet.sheet.cssRules[0].cssText).toBe('.ludumjs-game-container.my-phase [data-phase~="my-phase"] {display: block;}');
+
+            class MyPhase2 extends Phase {
+                static displayValue = 'flex';
+            };
+
+            game.registerPhase(MyPhase2);
+            expect(game.dynamicStyleSheet.sheet.cssRules[0].cssText).toBe('.ludumjs-game-container.my-phase2 [data-phase~="my-phase2"] {display: flex;}');
         });
 
         it('should throw if given class is already registered', () => {
