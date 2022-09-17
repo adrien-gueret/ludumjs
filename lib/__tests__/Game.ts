@@ -44,15 +44,46 @@ describe('Game', () => {
 
     describe('start', () => {
         it('should go to first phase', () => {
+            class MyPhase2 extends Phase {};
             const phase1 = new MyPhase(game);
-            const phase2 = new MyPhase(game);
+            const phase2 = new MyPhase2(game);
             
             game.phases = [phase1, phase2];
             game.goToPhase = jest.fn();
 
-            game.start();
+            game.start('sent data');
 
-            expect(game.goToPhase).toHaveBeenCalledWith(phase1);
+            expect(game.goToPhase).toHaveBeenCalledWith(phase1, 'sent data');
+        });
+
+        it('should go to phase corresponding to hash URL', () => {
+            class MyPhase2 extends Phase {};
+            const phase1 = new MyPhase(game);
+            const phase2 = new MyPhase2(game);
+
+            window.location.hash = '#MyPhase2';
+            
+            game.phases = [phase1, phase2];
+            game.goToPhase = jest.fn();
+
+            game.start('sent data');
+
+            expect(game.goToPhase).toHaveBeenCalledWith(phase2, 'sent data');
+        });
+
+        it('should go to first phase if hash URL does not match any phase', () => {
+            class MyPhase2 extends Phase {};
+            const phase1 = new MyPhase(game);
+            const phase2 = new MyPhase2(game);
+
+            window.location.hash = '#MyPhase999';
+            
+            game.phases = [phase1, phase2];
+            game.goToPhase = jest.fn();
+
+            game.start('sent data');
+
+            expect(game.goToPhase).toHaveBeenCalledWith(phase1, 'sent data');
         });
     });
 

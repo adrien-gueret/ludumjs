@@ -9,7 +9,7 @@ interface OnActionPayload {
     target: HTMLElement,
 }
 
-function getFirstElementWithAction(element: HTMLElement): HTMLElement | null {
+function getFirstElementWithDataProperty(element: HTMLElement, dataProperty: string): HTMLElement | null {
     let target = element;
 
     if (!target) {
@@ -17,7 +17,7 @@ function getFirstElementWithAction(element: HTMLElement): HTMLElement | null {
     }
 
     do {
-        if (target.dataset && 'action' in target.dataset) {
+        if (target.dataset && dataProperty in target.dataset) {
             return target;
         }
 
@@ -25,6 +25,10 @@ function getFirstElementWithAction(element: HTMLElement): HTMLElement | null {
     } while (target);
 
     return null;
+}
+
+function getFirstElementWithAction(element: HTMLElement): HTMLElement | null {
+    return getFirstElementWithDataProperty(element, 'action');
 }
 
 interface Phase {

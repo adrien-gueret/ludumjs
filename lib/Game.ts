@@ -70,7 +70,32 @@ export default class Game {
         this.goToPhase(targetPhase as Phase, ...data);
     }
 
+    goToPhaseByHashUrl(...data: Parameters<Phase['start']>) {
+        const phaseName = window.location.hash.substring(1);
+
+        if (!phaseName) {
+            this.goToPhase(this.phases[0], ...data);
+            return true;
+        }
+
+        const targetPhase = this.getPhaseByName(phaseName);
+
+        if (!targetPhase) {
+            return false;
+        }
+
+        this.goToPhase(targetPhase, ...data);
+
+        return true;
+    }
+
     start(...data: Parameters<Phase['start']>): this {
+        window.addEventListener('hashchange', this.goToPhaseByHashUrl.bind(this));
+
+        if (this.goToPhaseByHashUrl(...data)) {
+            return this;
+        }
+
         this.goToPhase(this.phases[0], ...data);
         return this;
     }
