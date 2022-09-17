@@ -41,13 +41,7 @@ class Phase {
     constructor(game: Game) {
         this.game = game;
     }
-
-    getClassName(): string {
-        return this.constructor.name
-            .replace(/\.?([A-Z]+)/g, (x, y) => `-${y.toLowerCase()}`)
-            .replace(/^-/, '');
-    }
-
+    
     onActionHandler = (event: MouseEvent|TouchEvent) => {
         const target = getFirstElementWithAction(event.target as HTMLElement);
 
@@ -75,7 +69,7 @@ class Phase {
             this.game.domContainer.addEventListener(clickEventName, this.onActionHandler);
         }
         
-        this.game.domContainer.classList.add(this.getClassName());
+        this.game.domContainer.classList.add(this.constructor.name);
     }
 
     async end(): Promise<void> {
@@ -91,7 +85,7 @@ class Phase {
             this.game.domContainer.removeEventListener(clickEventName, this.onActionHandler);
         }
 
-        this.game.domContainer.classList.remove(this.getClassName());
+        this.game.domContainer.classList.remove(this.constructor.name);
     }
 }
 

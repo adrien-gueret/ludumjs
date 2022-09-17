@@ -34,8 +34,8 @@ export default class Game {
 
         assert(!isPhaseAlreadyExisted, `Game.registerPhase: ${PhaseClass.name} is already registered`);
 
-        const phaseClassName = phaseInstance.getClassName();
-        this.dynamicStyleSheet.sheet.insertRule(`.ludumjs-game-container.${phaseClassName} [data-phase~="${phaseClassName}"]{display: ${PhaseClass.displayValue};}`, 0);
+        const phaseName = PhaseClass.name;
+        this.dynamicStyleSheet.sheet.insertRule(`.ludumjs-game-container.${phaseName} [data-phase~="${phaseName}"]{display: ${PhaseClass.displayValue};}`, 0);
 
         this.phases.push(phaseInstance);
 

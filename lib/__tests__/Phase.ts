@@ -32,14 +32,6 @@ describe('Phase', () => {
             phase = new MyPhase(game);
         });
 
-        describe('getClassName', () => {
-            it('should return snake-case class name', () => {
-                const className = phase.getClassName();
-
-                expect(className).toBe('my-phase');
-            });
-        });
-
         describe('start', () => {
             it('should call onStart', async () => {
                 phase.onStart = jest.fn();
@@ -74,7 +66,7 @@ describe('Phase', () => {
 
                 await phase.start();
 
-                expect(domContainer.classList.add).toHaveBeenCalledWith('my-phase');
+                expect(domContainer.classList.add).toHaveBeenCalledWith('MyPhase');
             });
 
             it('should NOT alter game container if onStart return false', async () => {
@@ -138,7 +130,7 @@ describe('Phase', () => {
 
                 await phase.end();
 
-                expect(domContainer.classList.remove).toHaveBeenCalledWith('my-phase');
+                expect(domContainer.classList.remove).toHaveBeenCalledWith('MyPhase');
             });
 
             it('should NOT alter game container if onEnd return false', async () => {
