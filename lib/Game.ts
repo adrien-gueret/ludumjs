@@ -16,7 +16,6 @@ export default class Game {
         this.currentPhase = null;
 
         this.domContainer = domContainer;
-        this.domContainer.classList.add('ludumjs-game-container');
 
         this.dialogs = Array.from(this.domContainer.querySelectorAll('[data-dialog]'));
         this.dialogs.forEach(dialog => dialog.classList.add('ludumjs-dialog'));
@@ -35,7 +34,7 @@ export default class Game {
         assert(!isPhaseAlreadyExisted, `Game.registerPhase: ${PhaseClass.name} is already registered`);
 
         const phaseName = PhaseClass.name;
-        this.dynamicStyleSheet.sheet.insertRule(`.ludumjs-game-container.${phaseName} [data-phase~="${phaseName}"]{display: ${PhaseClass.displayValue};}`, 0);
+        this.dynamicStyleSheet.sheet.insertRule(`.${phaseName} [data-phase~="${phaseName}"]{display: ${PhaseClass.displayValue};}`, 0);
 
         this.phases.push(phaseInstance);
 

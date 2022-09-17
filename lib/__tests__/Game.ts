@@ -23,7 +23,6 @@ describe('Game', () => {
     describe('constructor', () => {
         it('should correctly init DOM container', () => {
             expect(game.domContainer).toBe(gameContainer);
-            expect(gameContainer.classList.contains('ludumjs-game-container')).toBe(true);
         });
 
         it('should correctly init phases', () => {
@@ -104,14 +103,14 @@ describe('Game', () => {
 
         it('should add CSS rule about new registered phase', () => {
             game.registerPhase(MyPhase);
-            expect(game.dynamicStyleSheet.sheet.cssRules[0].cssText).toBe('.ludumjs-game-container.MyPhase [data-phase~="MyPhase"] {display: block;}');
+            expect(game.dynamicStyleSheet.sheet.cssRules[0].cssText).toBe('.MyPhase [data-phase~="MyPhase"] {display: block;}');
 
             class MyPhase2 extends Phase {
                 static displayValue = 'flex';
             };
 
             game.registerPhase(MyPhase2);
-            expect(game.dynamicStyleSheet.sheet.cssRules[0].cssText).toBe('.ludumjs-game-container.MyPhase2 [data-phase~="MyPhase2"] {display: flex;}');
+            expect(game.dynamicStyleSheet.sheet.cssRules[0].cssText).toBe('.MyPhase2 [data-phase~="MyPhase2"] {display: flex;}');
         });
 
         it('should throw if given class is already registered', () => {
