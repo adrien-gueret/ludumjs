@@ -88,6 +88,20 @@ describe('Game', () => {
 
             expect(() => game.registerPhase(MyPhase)).toThrow();
         });
+
+        it('should call method onRegister of given Phase class if all is OK', () => {
+            const onRegisterMock = jest.fn();
+
+            class MyPhase2 extends Phase {
+                onRegister() {
+                    onRegisterMock();
+                }
+            };
+            
+            game.registerPhase(MyPhase2);
+
+            expect(onRegisterMock).toHaveBeenCalled();
+        });
     });
 
     describe('registerPhases', () => {

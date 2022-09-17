@@ -28,6 +28,7 @@ function getFirstElementWithAction(element: HTMLElement): HTMLElement | null {
 }
 
 interface Phase {
+    onRegister?(): void;
     onStart?(...data:Array<unknown>): boolean|void | Promise<boolean|void>;
     onEnd?(): boolean|void;
     onAction?(actionData?: OnActionPayload): void;

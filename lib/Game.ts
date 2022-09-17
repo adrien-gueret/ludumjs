@@ -39,6 +39,10 @@ export default class Game {
 
         this.phases.push(phaseInstance);
 
+        if (phaseInstance.onRegister) {
+            phaseInstance.onRegister();
+        }
+
         return this;
     }
 

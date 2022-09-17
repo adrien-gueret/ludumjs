@@ -1,9 +1,3 @@
-.ludumjs-game-container * {
-	pointer-events: none;
-	position: relative;
-	z-index: 0;
-}
-
 .ludumjs-game-container [data-phase] {
 	display: none;
 }
