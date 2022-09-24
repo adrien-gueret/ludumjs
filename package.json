@@ -24,9 +24,9 @@
   },
   "jest": {
     "rootDir": "./",
-    "roots": [
-      "<rootDir>/lib/",
-      "<rootDir>/utils/"
+    "modulePathIgnorePatterns": [
+      ".history",
+      "node_modules"
     ],
     "coverageDirectory": "./coverage",
     "coverageThreshold": {

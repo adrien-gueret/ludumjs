@@ -1,4 +1,4 @@
-import { getClickEvent } from '../utils/events';
+import { getClickEvent } from './utils/events';
 import Game from './game';
 
 const clickEventName = getClickEvent();

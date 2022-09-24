@@ -1,2 +1,4 @@
-export { default as Game } from './lib/Game';
-export { default as Phase } from './lib/Phase';
+export { default as Game } from './Game';
+export { default as Phase } from './Phase';
+export { default as PeerGame } from './PeerGame';
+export { default as PeerPhase } from './PeerPhase';

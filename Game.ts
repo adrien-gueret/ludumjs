@@ -1,9 +1,8 @@
-import assert from '../utils/assert';
+import assert from './utils/assert';
 
 import Phase from './Phase';
 
-
-export default class Game {
+class Game {
     readonly domContainer: HTMLElement;
 
     protected readonly phases: Array<Phase>;
@@ -138,3 +137,5 @@ export default class Game {
         return dialog;
     }
 }
+
+export default Game;
