@@ -2,19 +2,20 @@ import assert from './utils/assert';
 import Game from './Game';
 import PeerPhase from './PeerPhase';
 
-interface EventEmmitter {
+export interface EventEmmitter {
     on: (eventName: string, callback: Function) => void;
     once: (eventName: string, callback: Function) => void;
     removeListener: (eventName: string, callback: Function) => void;
+    emit: (eventName: string, data?: unknown) => void;
 }
 
-interface Connection extends EventEmmitter {
+export interface Connection extends EventEmmitter {
     readonly open: boolean;
     readonly peer: string;
     send(data: unknown): void;
 }
 
-interface ConnectOptions {
+export interface ConnectOptions {
     serialization?: 'binary' | 'binary-utf8' | 'json' | 'none';
     label?: string;
     metadata?: unknown;
@@ -38,17 +39,15 @@ interface PeerResponse {
     value: unknown;
 }
 
-interface Peer extends EventEmmitter {
+export interface Peer extends EventEmmitter {
     id: string;
     connect: (peerId: string, options: ConnectOptions) => Connection;
     reconnect: () => void;
 }
 
 declare global {
-    interface Window { Peer: new () => Peer; }
+    interface Window { Peer?: new () => Peer; }
 }
-
-const GO_TO_PHASE_MESSAGE_TYPE = 'LUDUMJS_GO_TO_PHASE';
 
 class PeerGame extends Game {
     readonly domContainer: HTMLElement;
@@ -81,7 +80,7 @@ class PeerGame extends Game {
         this.connections.push(connection);
 
         connection.on('data', async (requestData: PeerRequest) => {
-            if (requestData.metadata.type === 'user_request' && this.currentPhase?.onPeerMessage) {
+            if (requestData.metadata.type === 'user_request' && /* istanbul ignore next */ this.currentPhase?.onPeerMessage) {
                 const responseValue = await this.currentPhase.onPeerMessage(requestData.data);
 
                 this.replyToConnection(connection, requestData.metadata.id, responseValue);
@@ -103,7 +102,7 @@ class PeerGame extends Game {
         }
 
         return new Promise((resolve) => {
-            this.peer.once('open', resolve);
+            this.peer.once('open', () => resolve(this.peer.id));
         });
     }
 
